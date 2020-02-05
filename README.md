@@ -1,1 +1,1 @@
-####I will not fail
+# Notes for DM552: Programmeringssprog
