@@ -142,7 +142,51 @@ mynull y (x:xs)
   | checkIfEqual y x == False = False
   | otherwise = mynull y xs
 
--- mylast :: [Int] -> Int come back to these ..
+
+mylength :: [Int] -> Int
+mylength [] = 0
+mylength (x:xs) = 1 + mylength xs
+
+mylast :: [Int] -> Int
+mylast [] = error "Empty list.."
+mylast [x] = x
+mylast (x:xs) = mylast xs
+
+
+mytake :: Int -> [Int] -> [Int]
+mytake 0 _ = []
+mytake x [] = []
+mytake x (y:ys) = y : mytake (x-1) ys
+
+myrepeat :: Int -> [Int]
+myrepeat x = x : myrepeat x
+
+myreplicate :: Int -> Int -> [Int]
+myreplicate 0 _ = []
+myreplicate x y = y : myreplicate (x-1) y
+
+mymaximum :: [Int] -> Int
+mymaximum [] = error "Empty List"
+mymaximum [x] = x
+mymaximum (x:xs)
+  | x < (mymaximum xs) = mymaximum xs
+  | otherwise = x
+
+mysum :: [Int] -> Int
+mysum [x] = x
+mysum [] = 0
+mysum (x:xs) = x + mysum xs
+
+myreverse :: [Int] -> [Int]
+myreverse [] = []
+myreverse (x:xs) = myreverse xs ++ [x]
+
+myelem :: Int -> [Int] -> Bool
+myelem _ [] = False
+myelem x (y:ys)
+  | x == y = True
+  | otherwise = myelem x ys
+
 
 -- 2.3 Lists, revisited (list comprehensions)
 -- add favorite number to elements in list
@@ -155,7 +199,7 @@ doubleNum x y = [z*2 | z <- y, z<=x]
 makeEleList :: [Int] -> [[Int]]
 makeEleList x = [[y] | y <- x]
 
--- Remove all vowels
+-- Used to check if String has vowels in removeVowels
 isVowel :: Char -> Bool
 isVowel x
   | x == 'a' = True
@@ -166,6 +210,7 @@ isVowel x
   | x == 'y' = True
   | otherwise = False
 
+-- Remove all vowels
 removeVowels :: String -> [Char]
 removeVowels x = [z | z <- x, isVowel z == False]
 
@@ -176,4 +221,65 @@ getAtLeastFour :: [String] -> [String]
 getAtLeastFour x = [z | z <- x, length z >= 4]
 
 --2.4 Something old, something new (Tuples)
---2.4.1
+--2.4.1 First Tuples
+
+nameList = ["Mathias", "Marcus", "Hans", "Bo", "Lars", "Jakob"]
+ageList = [22,21,17,34,53,12]
+-- Use zip to make list of persons (name, age)
+zipEx = zip nameList ageList
+-- List comprehensions to filter persons - people starting with 'A' or people with more than 5 letters
+filterPersons1 = [x | x <- zipEx, head (fst x) == 'M']
+filterPersons2 = [x | x <- zipEx, snd x >= 18]
+filterPersons3 = [x | x <- zipEx, length (fst x) > 5]
+-- Function with different patterns and behavior
+patternFunc :: (String, Int) -> String
+patternFunc (x, y)
+  | head x == 'A' = "You're in the A-club"
+  | length x > 5 = "That's one long ass name"
+  | y > 20 = "You're old as shit"
+  | otherwise = "You suck."
+
+-- Triple tuple birthday exercise
+-- If current month is lower than birth month, we know that it has not been the persons birthday yet
+-- If current month is higher, we know the birthday has been surpassed
+-- If birthmonth and current month is higher, we compare dates:
+-- If date is higher .. surpassed, if not .. we have not had birthday yet.
+
+
+-- returnAge :: (birthday d-m-y) -> (current date d-m-y) -> age
+returnAge :: (Int, Int, Int) -> (Int, Int, Int) -> Int
+returnAge (x,y,z) (xx,yy,zz)
+  | yy < y = (zz - z) - 1
+  | yy > y = zz - z
+  | yy == y && xx < x = (zz - z) -1
+  | yy == y && xx >= x = zz - z
+  | otherwise = 0
+
+--2.4.2 More tuples
+-- 1∷
+calcDistanceOrigin :: (Double, Double) -> Double
+calcDistanceOrigin (x, y) = sqrt((x-0)**2 + (y-0)**2)
+
+--2∷
+listX = [3.0, 5.3, 7.1, 4.3, 9.5, 6.0, 7.0]
+listY = [5.3, 6.1, 2.9, 9.0, 8.2, 9.3, 1.4]
+xyCoords = zip listX listY
+
+--3∷
+numss = [5,3,5,6,8,1,4,5,0,2,4,5,1,2,3]
+points = [(x,y) | x <- numss, y <- [1..10]]
+
+--4∷
+listOfDist = [calcDistanceOrigin x | x <- xyCoords]
+
+--5∷
+calcDistance :: (Double, Double) -> (Double, Double) -> Double
+calcDistance (x, y) (xx, yy) = sqrt((x-xx)**2 + (y-yy)**2)
+
+--6∷ Assumed a pair is listed in 4-tuple as (x1,y1,x2,y2)
+pairsPoints = [(x,y,xx,yy) | x <- [1..5], y <- [1..5], xx <- [1..5], yy <-[1..5]]
+
+--7∷
+calcPairPoints :: (Double, Double, Double, Double) -> Double
+calcPairPoints (x,y,xx,yy) = calcDistance (x,y) (xx,yy)
+listPairsPoints = [calcPairPoints x | x <- pairsPoints]
