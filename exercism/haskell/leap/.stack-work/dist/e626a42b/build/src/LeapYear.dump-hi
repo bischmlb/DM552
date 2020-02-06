@@ -1,0 +1,101 @@
+
+==================== FINAL INTERFACE ====================
+2020-02-06 09:10:44.6105762 UTC
+
+interface leap-1.6.0.10-IJmT4xJqkba8acldu87PNZ:LeapYear 8065
+  interface hash: 79fb04c67aa30de586e8dc63270e97a4
+  ABI hash: 1f15529ce5da17027ad425becd2c1f71
+  export-list hash: 3741dddf251c9fcf5228da0347148244
+  orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
+  flag hash: 553a8b7b28e94145f413f51d8e6bb7fe
+  opt_hash: 6faf2de08de32d19db9870899d88e59a
+  hpc_hash: 93b885adfe0da089cdf634904fd59f71
+  plugin_hash: ad164012d6b1e14942349d58b1132007
+  sig of: Nothing
+  used TH splices: False
+  where
+exports:
+  LeapYear.isLeapYear
+module dependencies:
+package dependencies: base-4.12.0.0* ghc-prim-0.5.3
+                      integer-gmp-1.0.2.0
+orphans: base-4.12.0.0:GHC.Float base-4.12.0.0:GHC.Base
+family instance modules: base-4.12.0.0:Control.Applicative
+                         base-4.12.0.0:Data.Functor.Const
+                         base-4.12.0.0:Data.Functor.Identity base-4.12.0.0:Data.Monoid
+                         base-4.12.0.0:Data.Semigroup.Internal base-4.12.0.0:GHC.Generics
+                         base-4.12.0.0:GHC.IO.Exception
+import  -/  base-4.12.0.0:GHC.Base fbe365a916ebeeeb4bc1f895dbe83e42
+import  -/  base-4.12.0.0:GHC.Real 3b42f3125c1d17d4e4b4437a3c97310f
+import  -/  base-4.12.0.0:Prelude 80c668cb99fbafebd524c5e897f8c982
+import  -/  ghc-prim-0.5.3:GHC.Classes 6002495dc43e58d28c87e5e5e058752a
+import  -/  integer-gmp-1.0.2.0:GHC.Integer.Type 991701cf58f9f55c8a39f2041a88edd4
+ad791ea86868e3c3a31c820c45d9c3b7
+  $trModule :: GHC.Types.Module
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.Module
+                   LeapYear.$trModule3
+                   LeapYear.$trModule1) -}
+f09107f920e438d716eefdee556e8234
+  $trModule1 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS LeapYear.$trModule2) -}
+d8c3e2aaeb61f5b7c3498eacf36ece03
+  $trModule2 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("LeapYear"#) -}
+c4955c099c162c854b15dd8d8a375dd0
+  $trModule3 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS LeapYear.$trModule4) -}
+01591c85390ef3b940658d1e4b965eeb
+  $trModule4 :: GHC.Prim.Addr#
+  {- HasNoCafRefs,
+     Unfolding: ("leap-1.6.0.10-IJmT4xJqkba8acldu87PNZ"#) -}
+83b04aa1b64ab2fb7de4845a487beba5
+  isLeapYear :: GHC.Integer.Type.Integer -> GHC.Types.Bool
+  {- Arity: 1, Strictness: <S,U>,
+     Unfolding: (\ (year :: GHC.Integer.Type.Integer) ->
+                 case GHC.Integer.Type.eqInteger#
+                        (GHC.Integer.Type.modInteger year LeapYear.isLeapYear4)
+                        LeapYear.isLeapYear3 of wild { DEFAULT ->
+                 let {
+                   $j :: GHC.Types.Bool <join 0>
+                   = case wild of lwild {
+                       DEFAULT -> GHC.Prim.tagToEnum# @ GHC.Types.Bool lwild
+                       1#
+                       -> case GHC.Integer.Type.eqInteger#
+                                 (GHC.Integer.Type.modInteger year LeapYear.isLeapYear2)
+                                 LeapYear.isLeapYear3 of wild1 {
+                            DEFAULT -> GHC.Types.True 1# -> GHC.Types.False } }
+                 } in
+                 case wild of lwild {
+                   DEFAULT -> $j
+                   1#
+                   -> case GHC.Integer.Type.eqInteger#
+                             (GHC.Integer.Type.modInteger year LeapYear.isLeapYear2)
+                             LeapYear.isLeapYear3 of wild1 {
+                        DEFAULT -> $j
+                        1#
+                        -> case GHC.Integer.Type.eqInteger#
+                                  (GHC.Integer.Type.modInteger year LeapYear.isLeapYear1)
+                                  LeapYear.isLeapYear3 of wild2 {
+                             DEFAULT -> $j 1# -> GHC.Types.True } } } }) -}
+e3ad9efbb256c076b837f467eee25e93
+  isLeapYear1 :: GHC.Integer.Type.Integer
+  {- HasNoCafRefs, Unfolding: (400) -}
+a5ccb8452f9643bc8ebc9d123c9ab55d
+  isLeapYear2 :: GHC.Integer.Type.Integer
+  {- HasNoCafRefs, Unfolding: (100) -}
+5fa5a46e57cb2df12864c5739cfd9d02
+  isLeapYear3 :: GHC.Integer.Type.Integer
+  {- HasNoCafRefs, Unfolding: (0) -}
+4ac1d9f2bc37ce927266be88aaedb25b
+  isLeapYear4 :: GHC.Integer.Type.Integer
+  {- HasNoCafRefs, Unfolding: (4) -}
+trusted: safe
+require own pkg trusted: False
+module header:
+  Nothing
+declaration docs:
+arg docs:
+

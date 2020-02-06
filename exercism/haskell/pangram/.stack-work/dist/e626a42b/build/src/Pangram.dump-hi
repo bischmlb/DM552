@@ -1,0 +1,100 @@
+
+==================== FINAL INTERFACE ====================
+2020-02-06 10:32:09.8690305 UTC
+
+interface pangram-2.0.0.12-53rrmRttFKzENvKvGq9vDU:Pangram 8065
+  interface hash: 5db82f7305caf94bd6ca2df80776d09c
+  ABI hash: 78321c95dc0805dbfc1f5c5b3c5996c9
+  export-list hash: 11a01cb13675c1de94e7c40f30e21ea5
+  orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
+  flag hash: 553a8b7b28e94145f413f51d8e6bb7fe
+  opt_hash: 6faf2de08de32d19db9870899d88e59a
+  hpc_hash: 93b885adfe0da089cdf634904fd59f71
+  plugin_hash: ad164012d6b1e14942349d58b1132007
+  sig of: Nothing
+  used TH splices: False
+  where
+exports:
+  Pangram.isPangram
+module dependencies:
+package dependencies: base-4.12.0.0* ghc-prim-0.5.3
+                      integer-gmp-1.0.2.0
+orphans: base-4.12.0.0:GHC.Float base-4.12.0.0:GHC.Base
+family instance modules: base-4.12.0.0:Control.Applicative
+                         base-4.12.0.0:Data.Functor.Const
+                         base-4.12.0.0:Data.Functor.Identity base-4.12.0.0:Data.Monoid
+                         base-4.12.0.0:Data.Semigroup.Internal base-4.12.0.0:GHC.Generics
+                         base-4.12.0.0:GHC.IO.Exception
+import  -/  base-4.12.0.0:Data.Char 1b375a88c42d83fdb0075d9bd7d91b40
+import  -/  base-4.12.0.0:Data.Foldable bdeac546b12282c8986759606b9295a5
+import  -/  base-4.12.0.0:GHC.Base fbe365a916ebeeeb4bc1f895dbe83e42
+import  -/  base-4.12.0.0:GHC.Unicode 83c3eb852482283851a887a8599902d0
+import  -/  base-4.12.0.0:Prelude 80c668cb99fbafebd524c5e897f8c982
+21db350e66572bd1973d5e9060efc409
+  $trModule :: GHC.Types.Module
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.Module
+                   Pangram.$trModule3
+                   Pangram.$trModule1) -}
+90b154968952dca644fe09aeb0c7920c
+  $trModule1 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS Pangram.$trModule2) -}
+62ee788e5120204cd137c38e8d8c2e3e
+  $trModule2 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("Pangram"#) -}
+e38bd81a1569e7e28cba3bb33a26abca
+  $trModule3 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS Pangram.$trModule4) -}
+a6ca816b640842734896b655eedc0be6
+  $trModule4 :: GHC.Prim.Addr#
+  {- HasNoCafRefs,
+     Unfolding: ("pangram-2.0.0.12-53rrmRttFKzENvKvGq9vDU"#) -}
+c6b06a9bd414d40be5bae504d3acbe2e
+  charList :: [GHC.Types.Char]
+  {- Unfolding: (GHC.Enum.eftChar 97# 122#) -}
+ac57e91a9fdade1f97458f1a0a8af753
+  isPangram :: GHC.Base.String -> GHC.Types.Bool
+  {- Arity: 1, Strictness: <L,1*U>,
+     Unfolding: InlineRule (0, True, True)
+                Pangram.isPangram1
+                  `cast`
+                (<GHC.Base.String>_R ->_R Data.Semigroup.Internal.N:All[0]) -}
+566620786b58c8a688efe46975676f9a
+  isPangram1 :: GHC.Base.String -> Data.Semigroup.Internal.All
+  {- Arity: 1, Strictness: <L,1*U>,
+     Unfolding: (\ (text :: GHC.Base.String) ->
+                 let {
+                   lvl :: [GHC.Types.Char]
+                   = GHC.Base.map
+                       @ GHC.Types.Char
+                       @ GHC.Types.Char
+                       GHC.Unicode.toLower
+                       text
+                 } in
+                 letrec {
+                   go :: [GHC.Types.Char] -> Data.Semigroup.Internal.All
+                     <join 1> {- Arity: 1, Strictness: <S,1*U> -}
+                   = \ (ds :: [GHC.Types.Char]) ->
+                     case ds of wild {
+                       []
+                       -> GHC.Types.True `cast` (Sym (Data.Semigroup.Internal.N:All[0]))
+                       : y ys
+                       -> case GHC.List.elem
+                                 @ GHC.Types.Char
+                                 GHC.Classes.$fEqChar
+                                 y
+                                 lvl of wild1 {
+                            GHC.Types.False
+                            -> GHC.Types.False `cast` (Sym (Data.Semigroup.Internal.N:All[0]))
+                            GHC.Types.True -> go ys } }
+                 } in
+                 go Pangram.charList) -}
+trusted: safe
+require own pkg trusted: False
+module header:
+  Nothing
+declaration docs:
+arg docs:
+

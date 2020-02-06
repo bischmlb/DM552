@@ -1,0 +1,267 @@
+
+==================== FINAL INTERFACE ====================
+2020-02-06 09:42:14.1047798 UTC
+
+interface space-age-1.2.0.6-1fktyY23ql885lRuPMfE96:SpaceAge 8065
+  interface hash: f7b699f5966080874c2741ac73baa240
+  ABI hash: ea630a878ee90bbeb3b366295328b4e7
+  export-list hash: 88d083000e5beac37dc043829510dabf
+  orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
+  flag hash: 553a8b7b28e94145f413f51d8e6bb7fe
+  opt_hash: 6faf2de08de32d19db9870899d88e59a
+  hpc_hash: 93b885adfe0da089cdf634904fd59f71
+  plugin_hash: ad164012d6b1e14942349d58b1132007
+  sig of: Nothing
+  used TH splices: False
+  where
+exports:
+  SpaceAge.ageOn
+  SpaceAge.Planet{SpaceAge.Earth SpaceAge.Jupiter SpaceAge.Mars SpaceAge.Mercury SpaceAge.Neptune SpaceAge.Saturn SpaceAge.Uranus SpaceAge.Venus}
+module dependencies:
+package dependencies: base-4.12.0.0* ghc-prim-0.5.3
+                      integer-gmp-1.0.2.0
+orphans: base-4.12.0.0:GHC.Float base-4.12.0.0:GHC.Base
+family instance modules: base-4.12.0.0:Control.Applicative
+                         base-4.12.0.0:Data.Functor.Const
+                         base-4.12.0.0:Data.Functor.Identity base-4.12.0.0:Data.Monoid
+                         base-4.12.0.0:Data.Semigroup.Internal base-4.12.0.0:GHC.Generics
+                         base-4.12.0.0:GHC.IO.Exception
+import  -/  base-4.12.0.0:GHC.Real 3b42f3125c1d17d4e4b4437a3c97310f
+import  -/  base-4.12.0.0:Prelude 80c668cb99fbafebd524c5e897f8c982
+2e501e7dd3df96e4a8c4db41a3b30dce
+  $tc'Earth :: GHC.Types.TyCon
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.TyCon
+                   16553869498893023151##
+                   13419139625693979128##
+                   SpaceAge.$trModule
+                   SpaceAge.$tc'Earth2
+                   0#
+                   SpaceAge.$tc'Earth1) -}
+52369c647d981b4e74ef691449cd991e
+  $tc'Earth1 :: GHC.Types.KindRep
+  {- HasNoCafRefs, Strictness: m1, Inline: [~] -}
+e2f25158ec0b6c79973dff7ffbd3f360
+  $tc'Earth2 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS SpaceAge.$tc'Earth3) -}
+e09f5ff1389a082a5c597bb5f20715c1
+  $tc'Earth3 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("'Earth"#) -}
+ac7a145d7fef39144f4861be15756ba5
+  $tc'Jupiter :: GHC.Types.TyCon
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.TyCon
+                   14463870122800582340##
+                   4920334639246934564##
+                   SpaceAge.$trModule
+                   SpaceAge.$tc'Jupiter1
+                   0#
+                   SpaceAge.$tc'Earth1) -}
+840f356ce1b87421170da1525d17e320
+  $tc'Jupiter1 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS SpaceAge.$tc'Jupiter2) -}
+ae8a2fecadf2b9ef951342b1385aa836
+  $tc'Jupiter2 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("'Jupiter"#) -}
+eeb3e2ee26dd79176c1aad4837604148
+  $tc'Mars :: GHC.Types.TyCon
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.TyCon
+                   8480422688008310147##
+                   17768734139078506414##
+                   SpaceAge.$trModule
+                   SpaceAge.$tc'Mars1
+                   0#
+                   SpaceAge.$tc'Earth1) -}
+bacaf9c488f6f9b3870464d4a1284d40
+  $tc'Mars1 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS SpaceAge.$tc'Mars2) -}
+09949176611ddab997382e93677f0d4b
+  $tc'Mars2 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("'Mars"#) -}
+3db5e7aeae59b132f02e3af5b9291e6b
+  $tc'Mercury :: GHC.Types.TyCon
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.TyCon
+                   3997666580176432537##
+                   11731383241030292709##
+                   SpaceAge.$trModule
+                   SpaceAge.$tc'Mercury1
+                   0#
+                   SpaceAge.$tc'Earth1) -}
+eb45878a1eee25c943f3d77d44a9f24f
+  $tc'Mercury1 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS SpaceAge.$tc'Mercury2) -}
+7262795d64633bb76159c6a4c54d5d09
+  $tc'Mercury2 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("'Mercury"#) -}
+c2e66c1cea92345b977b55311991caa1
+  $tc'Neptune :: GHC.Types.TyCon
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.TyCon
+                   12656157741880849741##
+                   6056226755635255133##
+                   SpaceAge.$trModule
+                   SpaceAge.$tc'Neptune1
+                   0#
+                   SpaceAge.$tc'Earth1) -}
+a8f8bfea01a84771b6811119f3d8ccd6
+  $tc'Neptune1 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS SpaceAge.$tc'Neptune2) -}
+55001a96608913485905d6a6fbb7cfc1
+  $tc'Neptune2 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("'Neptune"#) -}
+3598230d7e1f5bbfbab179434a629bd8
+  $tc'Saturn :: GHC.Types.TyCon
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.TyCon
+                   15167090633354399320##
+                   8445399152264231061##
+                   SpaceAge.$trModule
+                   SpaceAge.$tc'Saturn1
+                   0#
+                   SpaceAge.$tc'Earth1) -}
+b214767bf278530478959a8db6ad028f
+  $tc'Saturn1 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS SpaceAge.$tc'Saturn2) -}
+83defffb04d2573dd77c1dc723f526f9
+  $tc'Saturn2 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("'Saturn"#) -}
+73e5bec6acfe42a298bd1bfc7d7aeca4
+  $tc'Uranus :: GHC.Types.TyCon
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.TyCon
+                   12581910757582780305##
+                   15067542433195908458##
+                   SpaceAge.$trModule
+                   SpaceAge.$tc'Uranus1
+                   0#
+                   SpaceAge.$tc'Earth1) -}
+13f75794f6bcfe74346b0b04a5f1bc1a
+  $tc'Uranus1 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS SpaceAge.$tc'Uranus2) -}
+9cf704527beaffcc14f7fa63c99a0da5
+  $tc'Uranus2 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("'Uranus"#) -}
+bca3fdcb181725d9738cdd0ae80ea4bc
+  $tc'Venus :: GHC.Types.TyCon
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.TyCon
+                   12544189609697372249##
+                   11985735712426196988##
+                   SpaceAge.$trModule
+                   SpaceAge.$tc'Venus1
+                   0#
+                   SpaceAge.$tc'Earth1) -}
+2fd5b75396d1774810d9b4a6fb39098d
+  $tc'Venus1 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS SpaceAge.$tc'Venus2) -}
+a316bb6477c9ad1f90746322d4449f08
+  $tc'Venus2 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("'Venus"#) -}
+4f46a41991ba97757b8104600114e05b
+  $tcPlanet :: GHC.Types.TyCon
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.TyCon
+                   17277519642184794708##
+                   16804668690675503490##
+                   SpaceAge.$trModule
+                   SpaceAge.$tcPlanet1
+                   0#
+                   GHC.Types.krep$*) -}
+aa208d6f4b23b08ea981d6a919c3b8b7
+  $tcPlanet1 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS SpaceAge.$tcPlanet2) -}
+0e3ed8505bf017acc547a74afd2dbbf4
+  $tcPlanet2 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("Planet"#) -}
+42df9ad51b69bafa345e6e77216e1e79
+  $trModule :: GHC.Types.Module
+  {- HasNoCafRefs, Strictness: m,
+     Unfolding: (GHC.Types.Module
+                   SpaceAge.$trModule3
+                   SpaceAge.$trModule1) -}
+f4c069c797ce9ad5a93e50d32d990cc5
+  $trModule1 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS SpaceAge.$trModule2) -}
+3d5d128043f00243846d60dbacac5a18
+  $trModule2 :: GHC.Prim.Addr#
+  {- HasNoCafRefs, Unfolding: ("SpaceAge"#) -}
+5ed8915cb0ac6b1a1896a1a614e0bb46
+  $trModule3 :: GHC.Types.TrName
+  {- HasNoCafRefs, Strictness: m1,
+     Unfolding: (GHC.Types.TrNameS SpaceAge.$trModule4) -}
+d2fc67dba36af7faea3eb8edbf8b989f
+  $trModule4 :: GHC.Prim.Addr#
+  {- HasNoCafRefs,
+     Unfolding: ("space-age-1.2.0.6-1fktyY23ql885lRuPMfE96"#) -}
+708f7b55c5d1806331c3809bed32e2d0
+  $wageOn :: SpaceAge.Planet -> GHC.Prim.Float# -> GHC.Prim.Float#
+  {- Arity: 2, HasNoCafRefs, Strictness: <S,1*U><S,U>, Inline: [2],
+     Unfolding: (\ (w :: SpaceAge.Planet) (ww :: GHC.Prim.Float#) ->
+                 case w of wild {
+                   SpaceAge.Mercury
+                   -> GHC.Prim.divideFloat#
+                        (GHC.Prim.divideFloat# ww 3.15576e7#)
+                        0.2408467#
+                   SpaceAge.Venus
+                   -> GHC.Prim.divideFloat#
+                        (GHC.Prim.divideFloat# ww 3.15576e7#)
+                        0.61519724#
+                   SpaceAge.Earth -> GHC.Prim.divideFloat# ww 3.15576e7#
+                   SpaceAge.Mars
+                   -> GHC.Prim.divideFloat#
+                        (GHC.Prim.divideFloat# ww 3.15576e7#)
+                        1.8808157#
+                   SpaceAge.Jupiter
+                   -> GHC.Prim.divideFloat#
+                        (GHC.Prim.divideFloat# ww 3.15576e7#)
+                        11.862615#
+                   SpaceAge.Saturn
+                   -> GHC.Prim.divideFloat#
+                        (GHC.Prim.divideFloat# ww 3.15576e7#)
+                        29.447498#
+                   SpaceAge.Uranus
+                   -> GHC.Prim.divideFloat#
+                        (GHC.Prim.divideFloat# ww 3.15576e7#)
+                        84.016846#
+                   SpaceAge.Neptune
+                   -> GHC.Prim.divideFloat#
+                        (GHC.Prim.divideFloat# ww 3.15576e7#)
+                        164.79132# }) -}
+0094ac75f40ef15f90e12d964ff5f9e4
+  data Planet
+    = Mercury
+    | Venus
+    | Earth
+    | Mars
+    | Jupiter
+    | Saturn
+    | Uranus
+    | Neptune
+a9f31a8f8b13ae8ca0aa2dc52bd08d3f
+  ageOn :: SpaceAge.Planet -> GHC.Types.Float -> GHC.Types.Float
+  {- Arity: 2, HasNoCafRefs, Strictness: <S,1*U><S(S),1*U(U)>m,
+     Inline: [2],
+     Unfolding: InlineRule (2, True, False)
+                (\ (w :: SpaceAge.Planet) (w1 :: GHC.Types.Float) ->
+                 case w1 of ww { GHC.Types.F# ww1 ->
+                 case SpaceAge.$wageOn w ww1 of ww2 { DEFAULT ->
+                 GHC.Types.F# ww2 } }) -}
+trusted: safe
+require own pkg trusted: False
+module header:
+  Nothing
+declaration docs:
+arg docs:
+
