@@ -31,14 +31,40 @@ second (x:y:xs) = y
 secondLast :: [a] -> a
 secondLast list = list!!(length list - 2) -- (-2) because zero indexed
 
-swap :: (a, a) -> (a, a)
+swap :: (a, b) -> (b, a)
 swap (x, y) = (y, x)
 
-pair :: a -> a -> (a, a)
+pair :: a -> b -> (a, b)
 pair x y = (x, y)
 
 palindrome :: (Eq a) => [a] -> Bool
 palindrome list = reverse list == list
 
-twice :: f a -> a
-twice swap x = swap x
+twice :: (a -> a) -> a -> a
+twice f x = f (f x)
+
+flatten :: [[a]] -> [a]
+flatten [] = []
+flatten [x] = x
+flatten (x:xs) = head [x] ++ flatten xs
+
+alternate :: (Num a) => [a] -> [a]
+alternate [] = []
+alternate (x:y:xs) = [x] ++ [y*(-1)] ++ alternate xs
+
+setIdx :: [a] -> a -> Int -> [a]
+setIdx list ele index = ((take index list) ++ [ele]) ++ drop (index + 1) list -- use take to take first index element from list, append element, then drop first index+1 elements and append
+
+--Used to test modIdx
+multiplyBy3 :: (Num a) => a -> a
+multiplyBy3 x = x*3
+
+modIdx :: (a -> a) -> Int -> [a] -> [a]
+modIdx f index list = ((take index list)) ++ [f (list!!index)] ++ drop (index + 1) list
+
+unique :: (Eq a) => [a] -> [a]
+unique [] = []
+unique (x:xs)
+  | x `elem` newlist = newlist ++ (unique xs)
+  | otherwise = ([x] ++ newlist) ++ unique xs
+  where newlist = []
