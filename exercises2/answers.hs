@@ -23,8 +23,23 @@ import Data.List
 -- cycle :: [a] -> [a]
 -- succ :: a -> a
 
+--- 3. Let and where
+roots :: (Floating t) => t -> t -> t -> (t,t)
+roots a b c = (x,y)
+  where x = e + sqrt d / (2 * a)
+        y = e - sqrt d / (2 * a)
+        d = b * b - 4 * a * c
+        e = - b / (2 * a)
 
---- 3. Make the function
+roots2 :: (Floating t) => t -> t -> t -> (t,t)
+roots2 a b c =
+  let x = e + sqrt d / (2 * a)
+      y = e - sqrt d / (2 * a)
+      d = b * b - 4 * a * c
+      e = - b / (2 * a)
+  in (x,y)
+
+--- 4. Make the function
 second :: [a] -> a
 second (x:y:xs) = y
 

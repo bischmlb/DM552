@@ -283,3 +283,20 @@ pairsPoints = [(x,y,xx,yy) | x <- [1..5], y <- [1..5], xx <- [1..5], yy <-[1..5]
 calcPairPoints :: (Double, Double, Double, Double) -> Double
 calcPairPoints (x,y,xx,yy) = calcDistance (x,y) (xx,yy)
 listPairsPoints = [calcPairPoints x | x <- pairsPoints]
+
+
+
+
+--- Challenges
+-- Quicksort
+quicksort :: (Ord a) => [a] -> [a]
+quicksort [] = []
+quicksort (x:xs) =
+    let smallerSorted = quicksort [a | a <- xs, a <= x]
+        biggerSorted = quicksort [a | a <- xs, a > x]
+    in  smallerSorted ++ [x] ++ biggerSorted
+
+
+
+-- Mergesort
+-- Insertionsort
