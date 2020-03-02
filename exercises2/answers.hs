@@ -83,3 +83,29 @@ unique (x:xs)
   | x `elem` newlist = newlist ++ (unique xs)
   | otherwise = ([x] ++ newlist) ++ unique xs
   where newlist = []
+
+
+--- 5. What is the type? (2)
+-- ( + ) 42 = Num a => a -> a
+-- ( : ) 3 = Num a => [a] -> [a]
+-- ( , ) 'x' = b -> (Char, b)
+-- ( , , ) "hi" = b -> c -> ([Char], b, c)
+
+-- 6. Suggest the type
+one :: a -> Int
+one x = 1
+
+--apply :: (a -> a) -> a -> (a -> a)
+--compose :: (a -> a) -> (a -> a) -> a -> ((a -> a) -> ((a -> a)))
+
+
+--- 7. Show me what you're hiding
+plustalk :: Int -> Int -> String
+plustalk x y = show x ++ " + " ++ show y ++ " is " ++ show (x+y)
+
+fizzbuzz :: Int -> String
+fizzbuzz x
+  | x `mod` 3 == 0 && x `mod` 5 == 0 = "FizzBuzz"
+  | x `mod` 3 == 0 = "Fizz"
+  | x `mod` 5 == 0 = "Buzz"
+  | otherwise = show x
