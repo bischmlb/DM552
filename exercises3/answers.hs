@@ -92,6 +92,7 @@ isPrime num
 --- first 10 primes
 --- myfilter (\x -> isPrime x == True) [1..30]
 
+--- 1.3 Fold
 
 --- foldl examples ::
 --- EXAMPLE: foldl mod 1337 [1166, 86, 43]
@@ -105,9 +106,37 @@ isPrime num
 --- So answers i 42.
 
 --- foldr does the same, but starting from end of list.
-
+--- Make own fold functions ...
 myfoldl f num [x] = f num x
 myfoldl f num (x:xs) = myfoldl f (f num x) xs
 
 myfoldr f num [x] = f x num -- foldr takes list ele first, then input var
 myfoldr f num list = myfoldr f (f (last list) num) $ take (length list-1) list ++ []
+
+-- Own functions using own fold
+--- Own sum function
+mySumFold :: (Num a) => [a] -> a
+mySumFold list = myfoldl (+) 0 list
+
+--- Own Factorial
+myFactorial n = myfoldr (*) 1 [1..n]
+
+--- own Max
+myMaxFold list = myfoldl max 0 list
+
+--- own reverse
+
+
+myReverseFoldl list = myfoldl (\emp x -> x : emp) [] list
+myReverseFoldr list = myfoldr (\x emp -> emp ++ [x]) [] list
+
+-- own last -- not sure if this was how is should have been solved
+lastl1 list = foldl1 (flip const) list
+
+--- 2. Modules beginning
+
+
+-- 2.1 Usage
+chars = ['a'..'z']
+
+panagram string = all (\x -> elem x (map toLower string)) chars
