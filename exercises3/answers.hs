@@ -138,5 +138,4 @@ lastl1 list = foldl1 (flip const) list
 
 -- 2.1 Usage
 chars = ['a'..'z']
-
-panagram string = all (\x -> elem x (map toLower string)) chars
+pangram string = all (\x -> elem x (map toLower string)) chars
