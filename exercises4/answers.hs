@@ -77,3 +77,38 @@ keyExist value (Node a key left right)
   | value < key = keyExist value left
   | value > key = keyExist value right
   | otherwise = True
+
+
+--- 3.1 Charlike
+class CharLike a where
+  makeChar :: a -> Char
+  isChar :: a -> Bool
+  fromChar :: Char -> a
+  isChar _ = True
+
+instance CharLike Bool where
+  makeChar True = 'T'
+  makeChar False = 'F'
+  fromChar 'T' = True
+  fromChar 'F' = False
+
+instance CharLike Char where
+  makeChar c = c
+  fromChar c = c
+  isChar _ = True
+
+instance CharLike Int where
+  makeChar c = (intToDigit c)
+  fromChar x = (digitToInt x)
+
+
+--- 3.2 Game
+
+
+--- 4 Functors
+data MyMaybe a = MyJust a | MyNothing deriving (Show)
+instance Functor MyMaybe where
+  fmap f (MyJust x) = MyJust (f x)
+  fmap _ MyNothing = MyNothing
+
+ 
