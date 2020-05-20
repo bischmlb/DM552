@@ -139,3 +139,7 @@ lastl1 list = foldl1 (flip const) list
 -- 2.1 Usage
 chars = ['a'..'z']
 pangram string = all (\x -> elem x (map toLower string)) chars
+
+lengthFold list =  myfoldl (\x _ -> x+1) 0 list
+
+elemFold list = myfoldl (\elem x -> x==elem) 5 list
