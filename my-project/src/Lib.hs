@@ -88,9 +88,25 @@ makeMove game seed = do -- card = index of players 2 cards, (card 0 or 1)
   let fullMove = (piece, newPiece, (playerCards !! card))
   --- update game variables
   let initialWPieces = updatePieces game (chooseRandomPiece (length gamePieces ) (mkStdGen seed)) newGamePieces newPiece
-  let initialWTurn = switchPlayer initialWPieces
+  let initialWCards = updateCards initialWPieces card playerCards
+  let initialWTurn = switchPlayer initialWCards
   let newGame = updateMove initialWTurn fullMove
   newGame
+
+-- when use player card, need tail of total array append to player, then construct both arrays
+updateCards :: Game -> Int -> [Card] -> Game
+updateCards gm cd cards = do
+  let cardName = (cards !! cd)
+  let arr = removeItem cardName cards
+  let newPlayerCards = arr ++ [(last(gameCards gm))]
+  let opponentCards = if ((gameTurn gm) == Blue)
+                   then [] ++ [(gameCards gm) !! 2] ++ [(gameCards gm) !! 3]
+                   else [] ++ [(gameCards gm) !! 0] ++ [(gameCards gm) !! 1]
+  let newArray = if ((gameTurn gm) == Blue)
+                then newPlayerCards ++ opponentCards ++ [cardName]
+                else opponentCards ++ newPlayerCards ++ [cardName]
+
+  gm { gameCards = newArray }
 
 
 turnsPossible :: Int -> [String] -> [(Int, Int)]
@@ -158,28 +174,29 @@ removeItem _ []                 = []
 removeItem x (y:ys) | x == y    = removeItem x ys
                     | otherwise = y : removeItem x ys
 
-printTable :: Game -> IO (String)
+--- PRINTERS ---
+printTable :: Game -> String
 printTable table = do
-  game <- return (gameCards table)
-  piecesP1 <- return (gamePiecesBlue table)
-  piecesP2 <- return (gamePiecesRed table)
-  return game >>=
-    (\x -> return ( "(" ++ show x ++ show piecesP1 ++ show piecesP2 ++ ")" ++ "\n"))
+  let game = (gameCards table)
+  let piecesP1 = (gamePiecesBlue table)
+  let piecesP2 =  (gamePiecesRed table)
+  "(" ++ show game ++ show piecesP1 ++ show piecesP2 ++ ")" ++ "\n"
 
-printMove :: Game -> IO (String)
+
+printMove :: Game -> String
 printMove table = do
-  move <- return (recentMove table)
-  return move >>=
-    (\x -> return (show x ++ "\n"))
+  let move = (recentMove table)
+  show move ++ "\n"
 -------------------------------------------------------
-
---- Actual functionality ---
+--TESTER
 initt = Game { gameCards = randomInitial (mkStdGen 100)
                     , gameTurn = Blue
                     , gamePiecesBlue = [(0,2),(0,0),(0,1),(0,3),(0,4)]
                     , gamePiecesRed = [(4,2),(4,0),(4,1),(4,3),(4,4)]
                     , recentMove = ((0,0),(0,0),"null")
                     , gameState = Running }
+
+--- FUNCTIONALITY ---
 
 generateRandom :: Int -> Int -> IO (String)
 generateRandom x y = do
@@ -190,21 +207,23 @@ generateRandom x y = do
                       , recentMove = ((0,0),(0,0),"null")
                       , gameState = Running }
 
-  initialTable <- printTable game -- NEED METHOD FOR PRINTING MOVEES
+  let initialTable = printTable game
   let game1 = makeMove game x
-  move1 <- printMove game1
-  gameLoop x y game1
-  return initialTable >>= (\x -> return ( x ++ move1 ))
+  let p1 = printMove game1
+  let total = gameLoop x y game1 "" -- append to empty string
+  return (initialTable ++ total)
 
-gameLoop :: Int -> Int -> Game -> IO (String)
-gameLoop _ 0 _ = return "Loop End"
-gameLoop seed n gm  | (gameState gm) == GameOver = return "Game Over."
-                    | otherwise = do
+--- GAMELOOP FOR GENERATING RANDOM GAMES ---
+gameLoop :: Int -> Int -> Game -> String -> String
+gameLoop _ 0 _ s = s -- return final string when n==0
+gameLoop seed n gm string  | (gameState gm) == GameOver = "Game Over."
+                           | otherwise = do
 
-    print gm
+    let move = printMove gm
+    let newString = string ++ move
     let newGame = makeMove gm seed
-    gameLoop seed (n-1) newGame
-    return " "
+    gameLoop seed (n-1) newGame newString
+----------------------------------------------------------
 
 isValid :: FilePath -> IO (String)
 isValid _ = return "Not yet implemented"
