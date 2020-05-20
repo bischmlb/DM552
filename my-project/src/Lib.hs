@@ -6,7 +6,6 @@ module Lib (
 
 import System.IO
 import Control.Monad
-import Control.Monad.State
 import System.Random
 import Data.Array.IO
 
@@ -15,10 +14,11 @@ data Player = Blue | Red deriving (Eq, Show)
 data Status = Running | GameOver deriving (Eq, Show)
 
 
-type MoveType = ((Int,Int), (Int, Int), [Char])
+type Move = ((Int,Int), (Int, Int), [Char])
 type PieceList = [(Int, Int)]
 type Coordinate = (Int, Int)
 type Card = String
+
 ---- pattern matching for tuple type
 fst' (a,_,_) = a
 snd' (_,b,_) = b
@@ -36,6 +36,7 @@ data Game = Game { gameCards :: [Card]
                   , gameTurn :: Player
                   , gamePiecesBlue :: PieceList
                   , gamePiecesRed :: PieceList
+                  , recentMove :: Move
                   , gameState :: Status
                   } deriving (Eq, Show)
 
@@ -65,10 +66,10 @@ checkStatus game = do
     else return "Game Running"
 
 checkTurn :: Game -> Player
-checkTurn (Game _ gt _ _ _) = gt
+checkTurn (Game _ gt _ _ _ _) = gt
 
-makeMove :: Game -> Int -> IO (String) -- Parameters: Game, card index, move (to make), piece to move
-makeMove game card = do -- card = index of players 2 cards, (card 0 or 1)
+makeMove :: Game -> Int -> Game -- Parameters: Game, card index, move (to make), piece to move
+makeMove game seed = do -- card = index of players 2 cards, (card 0 or 1)
   let turn = checkTurn game
   let gamePieces = if (turn == Blue)
                   then (gamePiecesBlue game)
@@ -76,16 +77,20 @@ makeMove game card = do -- card = index of players 2 cards, (card 0 or 1)
   let playerCards = if (turn == Blue)
                   then [] ++ [(gameCards game) !! 0] ++ [(gameCards game) !! 1]
                   else [] ++ [(gameCards game) !! 2] ++ [(gameCards game) !! 3]
+  let card = chooseRandomCard (mkStdGen seed)
   let possibleTurns = turnsPossible card playerCards
 
-  let move = possibleTurns !! (chooseRandomMove (length possibleTurns) (mkStdGen 101))
-  let piece = gamePieces !! (chooseRandomPiece (length gamePieces ) (mkStdGen 102))
+  let move = possibleTurns !! (chooseRandomMove (length possibleTurns) (mkStdGen seed))
+  let piece = gamePieces !! (chooseRandomPiece (length gamePieces ) (mkStdGen seed))
   let newGamePieces = removeItem piece gamePieces
   let newPiece = ((fst piece)+(fst move), (snd piece)+(snd move))
+
   let fullMove = (piece, newPiece, (playerCards !! card))
   --- update game variables
-  let initial = updatePieces initial (chooseRandomPiece (length gamePieces ) (mkStdGen 102)) newGamePieces newPiece
-  return (playerCards !! card) >>= (\x -> return ("(" ++ show piece ++ "," ++ show newPiece ++ "," ++ show x ++ ")" ++ "\n"))
+  let initialWPieces = updatePieces game (chooseRandomPiece (length gamePieces ) (mkStdGen seed)) newGamePieces newPiece
+  let initialWTurn = switchPlayer initialWPieces
+  let newGame = updateMove initialWTurn fullMove
+  newGame
 
 
 turnsPossible :: Int -> [String] -> [(Int, Int)]
@@ -102,10 +107,13 @@ updatePieces gm ind arr newPiece -- ind = 0 means sensei piece, 1 means pawn
     gm { gamePiecesBlue = newPiece:arr }
   | ind == 0 && (gameTurn gm == Red) =
     gm { gamePiecesRed = newPiece:arr }
-  | ind == 1 && (gameTurn gm == Blue) =
+  | ind /= 0 && (gameTurn gm == Blue) =
     gm { gamePiecesBlue = arr ++ [newPiece] }
-  | ind == 1 && (gameTurn gm == Red) =
+  | ind /= 0 && (gameTurn gm == Red) =
     gm { gamePiecesRed = arr ++ [newPiece] }
+
+updateMove :: Game -> Move -> Game
+updateMove gm mv = gm { recentMove = mv }
 
 chooseRandomMove :: Int -> StdGen -> Int
 chooseRandomMove n gen =
@@ -117,17 +125,10 @@ chooseRandomPiece n gen =
   let (int, newGen) = randomR(0, n-1) gen
   in int
 
-chooseRandomCard :: StdGen -> Int -- RED OR BLUE, NUMBER BETWEEN 0,1 or 1,2
+chooseRandomCard :: StdGen -> Int
 chooseRandomCard gen =
-  let (int, newGen) = randomR(0, 1)
-
-
---- HELPERS ---
-randNumberGen :: Int -> Int -> IO Int
-randNumberGen x y = do
-  generator <- newStdGen
-  let (randNumber, _) = randomR(x,y) generator :: (Int, StdGen)
-  return randNumber
+  let (int, newGen) = randomR(0, 1) gen
+  in int
 
 
 --- TODO: Make it possible for makemove to make random moves
@@ -164,9 +165,21 @@ printTable table = do
   piecesP2 <- return (gamePiecesRed table)
   return game >>=
     (\x -> return ( "(" ++ show x ++ show piecesP1 ++ show piecesP2 ++ ")" ++ "\n"))
+
+printMove :: Game -> IO (String)
+printMove table = do
+  move <- return (recentMove table)
+  return move >>=
+    (\x -> return (show x ++ "\n"))
 -------------------------------------------------------
 
 --- Actual functionality ---
+initt = Game { gameCards = randomInitial (mkStdGen 100)
+                    , gameTurn = Blue
+                    , gamePiecesBlue = [(0,2),(0,0),(0,1),(0,3),(0,4)]
+                    , gamePiecesRed = [(4,2),(4,0),(4,1),(4,3),(4,4)]
+                    , recentMove = ((0,0),(0,0),"null")
+                    , gameState = Running }
 
 generateRandom :: Int -> Int -> IO (String)
 generateRandom x y = do
@@ -174,18 +187,24 @@ generateRandom x y = do
                       , gameTurn = Blue
                       , gamePiecesBlue = [(0,2),(0,0),(0,1),(0,3),(0,4)]
                       , gamePiecesRed = [(4,2),(4,0),(4,1),(4,3),(4,4)]
+                      , recentMove = ((0,0),(0,0),"null")
                       , gameState = Running }
-                      
-  initialTable <- printTable game
-  move1 <- makeMove game 0
-  return initialTable >>= (\x -> return ( x ++ move1))
 
-gameLoop :: Int -> Game -> IO ()
-gameLoop 0 _ = return ()
-gameLoop n game | (gameState game) == GameOver = putStrLn "Game over."
-                | otherwise = do
-    print game
-    move <- makeMove game
+  initialTable <- printTable game -- NEED METHOD FOR PRINTING MOVEES
+  let game1 = makeMove game x
+  move1 <- printMove game1
+  gameLoop x y game1
+  return initialTable >>= (\x -> return ( x ++ move1 ))
+
+gameLoop :: Int -> Int -> Game -> IO (String)
+gameLoop _ 0 _ = return "Loop End"
+gameLoop seed n gm  | (gameState gm) == GameOver = return "Game Over."
+                    | otherwise = do
+
+    print gm
+    let newGame = makeMove gm seed
+    gameLoop seed (n-1) newGame
+    return " "
 
 isValid :: FilePath -> IO (String)
 isValid _ = return "Not yet implemented"
