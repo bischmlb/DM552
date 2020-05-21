@@ -75,27 +75,30 @@ checkStatus game = do
 checkTurn :: Game -> Player
 checkTurn (Game _ gt _ _ _ _) = gt
 
-makeMove :: Game -> Int -> Game -- generate a new random move and update game
+makeMove :: Game -> Int -> Game                                                 -- generate a new random move and update game
 makeMove game seed = do
   let turn = checkTurn game
-  let gamePieces = if (turn == Blue) --- specify gamepieces to update (red or blue?)
+  let gamePieces = if (turn == Blue)                                            -- specify gamepieces to update (red or blue?)
                   then (gamePiecesBlue game)
                   else (gamePiecesRed game)
-  let playerCards = if (turn == Blue) -- available players cards for each player
+  let playerCards = if (turn == Blue)                                           -- available players cards for each player
                   then [] ++ [(gameCards game) !! 0] ++ [(gameCards game) !! 1]
                   else [] ++ [(gameCards game) !! 2] ++ [(gameCards game) !! 3]
   let card = chooseRandomCard (mkStdGen seed)
-  let possibleTurns = if ((gameTurn game) == Blue) -- set blue or red move possibilities
+  let possibleTurns = if ((gameTurn game) == Blue)                              -- set blue or red move possibilities
                     then turnsPossible possibleMovesBlue card playerCards
                     else turnsPossible possibleMovesRed card playerCards
 
   let move = possibleTurns !! (chooseRandomMove (length possibleTurns) (mkStdGen seed))
   let piece = gamePieces !! (chooseRandomPiece (length gamePieces ) (mkStdGen seed))
-  let newGamePieces = removeItem piece gamePieces -- RIGHT NOW THIS WILL REMOVE 2 PIECES BECAUSE WE DONT CHECK FOR PIECES ON SAME SPOT (SAME TEAM)
-  let newPiece = ((fst piece)+(fst move), (snd piece)+(snd move))
+  let newPiece = if (checkLegalMove gamePieces ((fst piece)+(fst move), (snd piece)+(snd move)))
+                then ((fst piece)+(fst move), (snd piece)+(snd move))
+                else piece
+
+  let newGamePieces = removeItem piece gamePieces
 
   let fullMove = (piece, newPiece, (playerCards !! card))
-  --- update game variables
+                                                                                -- update game variables
   let initialWPieces = updatePieces game (chooseRandomPiece (length gamePieces ) (mkStdGen seed)) newGamePieces newPiece
   let initialOpPiece = takePiece initialWPieces newPiece
   let initialWCards = updateCards initialOpPiece card playerCards
@@ -103,7 +106,18 @@ makeMove game seed = do
   let newGame = updateMove initialWTurn fullMove
   newGame
 
--- when use player card, need tail of total array append to player, then construct both arrays
+-- hvis movet ikke er legal, prøv et nyt move for det kort. Hvis ingen af moves for det kort er tilgængelige, prøv moves for det andet kort på spillerens hånd.
+
+checkLegalMove :: PieceList -> Coordinate -> Bool
+checkLegalMove xy mv
+  | (mv `elem` xy) = False                                                      -- If the move is already in the pieceList, then we cannot make this move, because else we will have 2 pieces on same spot.
+  | (fst mv) > 4 = False                                                        -- check if xy out of bounds
+  | (fst mv) < 0 = False                                                        --------
+  | (snd mv) > 4 = False                                                        --------
+  | (snd mv) < 0 = False                                                        --------
+  | otherwise = True
+
+
 updateCards :: Game -> Int -> [Card] -> Game
 updateCards gm cd cards = do
   let cardName = (cards !! cd)
@@ -127,21 +141,21 @@ turnsPossible possibleMoves n arr
   | (arr !! n) == "Tiger" = (tiger possibleMoves)
   | otherwise = (monkey possibleMoves)
 
-takePiece :: Game -> Coordinate -> Game --something like, if the current player's pieces has a new coordinate, that is equal to a coordinate in opponent players pieces, take this piece from opponent
+takePiece :: Game -> Coordinate -> Game
 takePiece gm xy = do
   let opponentXY = if ((gameTurn gm) == Blue)
                   then (gamePiecesRed gm)
                   else (gamePiecesBlue gm)
-  let removePiece = if ((xy `elem` opponentXY) == True) -- if the piece is in opponent array
+  let removePiece = if ((xy `elem` opponentXY) == True)                         -- if the piece is in opponent array
                     then xy
-                    else (99,99)                      -- set to something invalid ..
+                    else (99,99)                                                -- set to something invalid out of bounds, which will not remove anything from array ..
   let newOpponentXY = removeItem removePiece opponentXY
   if ((gameTurn gm) == Blue)
     then gm {gamePiecesRed = newOpponentXY}
     else gm {gamePiecesBlue = newOpponentXY}
 
 updatePieces :: Game -> Int -> [(Int,Int)] -> (Int, Int) -> Game
-updatePieces gm ind arr newPiece -- ind = 0 means sensei piece, 1 means pawn
+updatePieces gm ind arr newPiece                                                -- ind = 0 means sensei piece, 1 means pawn
   | ind == 0 && (gameTurn gm == Blue) =
     gm { gamePiecesBlue = newPiece:arr }
   | ind == 0 && (gameTurn gm == Red) =
@@ -168,8 +182,9 @@ chooseRandomCard :: StdGen -> Int
 chooseRandomCard gen =
   let (int, newGen) = randomR(0, 1) gen
   in int
-
---- MAKE INITIAL TABLE ----
+  
+----------------------------------------------
+----------- MAKE INITIAL TABLE ---------------
 randomInitial :: StdGen -> [String]
 randomInitial gen =
   let (int1, newGen) = randomR(0,4) gen
@@ -184,15 +199,15 @@ randomInitial gen =
       newList3 = removeItem string3 newList2
       string4 = (newList3 !! int4)
       newList4 = removeItem string4 newList3
-      string5 = (newList4 !! 0) -- size will be 1 and we will get last element available
+      string5 = (newList4 !! 0)                                                 -- size will be 1 and we will get last element available
   in  [string1, string2, string3, string4, string5]
 
---- Remove item in array ---
+---------- Remove item in array -------------
 removeItem _ []                 = []
 removeItem x (y:ys) | x == y    = removeItem x ys
                     | otherwise = y : removeItem x ys
-
---- PRINTERS ---
+---------------------------------------------
+-------------- PRINTERS ---------------------
 printTable :: Game -> String
 printTable table = do
   let game = (gameCards table)
@@ -214,7 +229,8 @@ initt = Game { gameCards = randomInitial (mkStdGen 100)
                     , recentMove = ((0,0),(0,0),"null")
                     , gameState = Running }
 
---- FUNCTIONALITY ---
+-------------------------------------------------------
+--------------- FUNCTIONALITY -------------------------
 generateRandom :: Int -> Int -> IO (String)
 generateRandom x y = do
   let game = Game { gameCards = randomInitial (mkStdGen x)
@@ -230,7 +246,8 @@ generateRandom x y = do
   let total = gameLoop x y game1 "" -- append to empty string
   return (initialTable ++ total)
 
---- GAMELOOP FOR GENERATING RANDOM GAMES ---
+-------------------------------------------------------
+------ GAMELOOP FOR GENERATING RANDOM GAMES -----------
 gameLoop :: Int -> Int -> Game -> String -> String
 gameLoop _ 0 _ s = s -- return final string when n==0
 gameLoop seed n gm string  | (gameState gm) == GameOver = "Game Over."
