@@ -81,18 +81,26 @@ makeMove game seed = do
   let gamePieces = if (turn == Blue)                                            -- specify gamepieces to update (red or blue?)
                   then (gamePiecesBlue game)
                   else (gamePiecesRed game)
+
   let playerCards = if (turn == Blue)                                           -- available players cards for each player
                   then [] ++ [(gameCards game) !! 0] ++ [(gameCards game) !! 1]
                   else [] ++ [(gameCards game) !! 2] ++ [(gameCards game) !! 3]
+
   let card = chooseRandomCard (mkStdGen seed)
   let possibleTurns = if ((gameTurn game) == Blue)                              -- set blue or red move possibilities
                     then turnsPossible possibleMovesBlue card playerCards
                     else turnsPossible possibleMovesRed card playerCards
 
-  let move = possibleTurns !! (chooseRandomMove (length possibleTurns) (mkStdGen seed))
   let piece = gamePieces !! (chooseRandomPiece (length gamePieces ) (mkStdGen seed))
-  let newPiece = if (checkLegalMove gamePieces ((fst piece)+(fst move), (snd piece)+(snd move)))
-                then ((fst piece)+(fst move), (snd piece)+(snd move))
+  let move = possibleTurns !! (chooseRandomMove (length possibleTurns) (mkStdGen seed))
+  let verifyMove = checkLegalMove gamePieces ((fst piece) + (fst move), (snd piece) + (snd move))
+
+  let theMove = if (verifyMove)                                                 -- if current move is not legal, then we try with another
+                then move
+                else checkLegalGenerate seed possibleTurns gamePieces move
+
+  let newPiece = if (checkLegalMove gamePieces ((fst piece)+(fst theMove), (snd piece)+(snd theMove)))
+                then ((fst piece)+(fst theMove), (snd piece)+(snd theMove))
                 else piece
 
   let newGamePieces = removeItem piece gamePieces
@@ -106,7 +114,25 @@ makeMove game seed = do
   let newGame = updateMove initialWTurn fullMove
   newGame
 
--- hvis movet ikke er legal, prøv et nyt move for det kort. Hvis ingen af moves for det kort er tilgængelige, prøv moves for det andet kort på spillerens hånd.
+-- TODO: hvis vi fjerner sensei fra takePieces, sæt current spiller som vinder.
+-- TODO: hvis vi ikke har flere muligheder mht. legal moves for det aktuelle kort, så prøv for det andet.
+
+checkLegalGenerate :: Int -> PieceList -> PieceList -> Coordinate -> Coordinate -- Finds a legal move if current move is not legal.
+checkLegalGenerate seed xyz xy mv = do
+  let legalMove = checkLegalMove xy mv
+  let move = if (legalMove == True)
+            then mv
+            else do                                                             -- If legalMove is false, remove the move from possibleTurns array, and try again
+              let arrLength = (length xyz)                                      -- If array is of length 1, there is only one other possibility
+              if (arrLength == 1)
+                then (head xyz)
+                else do
+                  let newArr = removeItem mv xyz
+                  let newMv = newArr !! (chooseRandomMove (length newArr) (mkStdGen seed))
+                  checkLegalGenerate seed newArr xy newMv
+  move
+
+
 
 checkLegalMove :: PieceList -> Coordinate -> Bool
 checkLegalMove xy mv
@@ -182,7 +208,7 @@ chooseRandomCard :: StdGen -> Int
 chooseRandomCard gen =
   let (int, newGen) = randomR(0, 1) gen
   in int
-  
+
 ----------------------------------------------
 ----------- MAKE INITIAL TABLE ---------------
 randomInitial :: StdGen -> [String]
@@ -249,7 +275,7 @@ generateRandom x y = do
 -------------------------------------------------------
 ------ GAMELOOP FOR GENERATING RANDOM GAMES -----------
 gameLoop :: Int -> Int -> Game -> String -> String
-gameLoop _ 0 _ s = s -- return final string when n==0
+gameLoop _ 0 _ s = s                                                            -- return final string when n==0
 gameLoop seed n gm string  | (gameState gm) == GameOver = "Game Over."
                            | otherwise = do
 
