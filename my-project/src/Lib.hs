@@ -128,11 +128,12 @@ makeMove game seed = do
   let initialWPieces = updatePieces game (chooseRandomPiece (length gamePieces) (mkStdGen seed) ) newGamePieces newPiece
   let initialOpPiece = takePiece initialWPieces newPiece
   let initialWCards = updateCards initialOpPiece actualCard playerCards
-  let initialWTurn = switchPlayer initialWCards
+  let wayOfTheStream = if (wayOfStream == True)
+                      then initialWCards { gameState = GameOver, winner = turn}
+                      else initialWCards
+  let initialWTurn = switchPlayer wayOfTheStream
   let newGame = updateMove initialWTurn fullMove
-  if (wayOfStream)
-      then newGame { gameState = GameOver }                                     -- if way of stream is true, sensei has been moved to enemy shrine, and game has been concluded.
-      else newGame
+  newGame
 
 
 checkLegalGenerate :: Int -> PieceList -> PieceList -> Coordinate -> Coordinate -- Finds a legal move if current move is not legal.
@@ -309,8 +310,7 @@ gameLoop seed n gm string  | (gameState gm) == GameOver = do
                               let winnerString = if ((winner gm) == Blue)
                                                 then "Blue"
                                                 else "Red"
-                              let moveWin = winnerString ++ " made the winning-move: " ++ printMove gm ++ printTable gm
-                              --finalString ++ moveWin not using these
+                              --let moveWin = winnerString ++ " made the winning-move: " ++ printMove gm ++ printTable gm for debugging
                               string ++ printMove gm
                            | otherwise = do
                               --let table = printTable gm -- for debugging
@@ -345,8 +345,16 @@ isValid filePath = do
         return result
 
 isValidFunc :: Int -> [String] -> Game -> String
-isValidFunc 0 _ gm = printTable gm
+isValidFunc 0 _ gm | (gameState gm) == GameOver = do
+                            let winnerr = (winner gm)
+                            let finalGame = if (winnerr == Blue)
+                                              then gm {gamePiecesRed = []}
+                                              else gm {gamePiecesBlue = []}
+                            let finalTable = printTable finalGame
+                            finalTable
+                    | otherwise = printTable gm
 isValidFunc n content gm = do
+
   let str = (content !! 0) -- do some rule checking on this string.
   let newArr = delete str content
   let move = read str :: Move
@@ -360,27 +368,49 @@ isValidFunc n content gm = do
                   then 0
                   else 1
 
+  let moveSensei = if (senseimove == 0)
+                  then True
+                  else False
+
   let newGamePieces = removeItem (fst' move) gamePieces
   let validMove = checkValidMove gm newGamePieces move
 
+
   if (validMove == False)
-    then "NonValid " ++ str
+    then error ("NonValid " ++ str)
     else do
       let verifyMove = if ((snd' move) `elem` gamePieces)
                     then (fst' move)
                     else (snd' move)
+      let opponentXY = if (gameTurn gm == Blue)
+                        then (gamePiecesRed gm)
+                        else (gamePiecesBlue gm)
+      let wayOfStream = wayOfTheStream (gameTurn gm) moveSensei verifyMove
       let newGame = updatePieces gm senseimove newGamePieces verifyMove
       let newGame' = takePiece newGame verifyMove
       let newGame'' = updateCards newGame' (thd' move) playerCards
-      let newGame''' = switchPlayer newGame''
+      let wayOfTheStream = if (wayOfStream == True)
+                          then newGame'' { gameState = GameOver, winner = (gameTurn gm)}
+                          else newGame''
+      let newGame''' = switchPlayer wayOfTheStream
       isValidFunc (n-1) newArr newGame'''
 
 ----------------------------------------------------------------------------
 ------------------CHECKERS FOR ISVALID--------------------------------------
 
---TODO: Need to also check if sensei is removed ... PICK WINNER AND REMOVE PIECES FROM OPPONENT
---TODO: Check if cards sorted lixographically every time
---TODO: Check if all initial pieces present in game ..
+
+
+checkForMissing :: GameOV -> Bool
+checkForMissing gm = do
+  let checkRedPieces = if ((thd' gm) /= [(4,2),(4,0),(4,1),(4,3),(4,4)])
+                        then False
+                        else True
+  let checkBluePieces = if ((snd' gm) /= [(0,2),(0,0),(0,1),(0,3),(0,4)])
+                        then False
+                        else True
+  if ((checkRedPieces == True) && (checkBluePieces == True))
+    then True
+    else False
 
 
 
@@ -432,11 +462,12 @@ checkValidGame game = do                                                        
   let validP1 = if (pieceList1 == ([head pieceList1] ++ sort(tail(pieceList1))))
                 then True
                 else False
-  let pieceList2 = snd' game
+  let pieceList2 = thd' game
   let validP2 = if (pieceList2 == ([head pieceList2] ++ sort(tail(pieceList2))))
                 then True
                 else False
-  if (validtable == True && validP1 == True && validP2 == True)
+  let missingPieces = checkForMissing game
+  if (validtable == True && validP1 == True && validP2 == True && missingPieces == True)
     then True
     else False
 
