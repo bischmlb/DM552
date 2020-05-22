@@ -112,7 +112,7 @@ makeMove game seed = do
 
   let newPiece = if (checkLegalMove gamePieces ((fst piece)+(fst tupMove), (snd piece)+(snd tupMove)))
                 then ((fst piece)+(fst tupMove), (snd piece)+(snd tupMove))
-                else piece
+                else piece                                                      -- if the move is still not legal, we will not perform any move
 
 
   let newGamePieces = removeItem piece gamePieces
@@ -323,7 +323,10 @@ gameLoop seed n gm string  | (gameState gm) == GameOver = "Game Over."
 ----------------------------------------------------------
 
 isValid :: FilePath -> IO (String)
-isValid _ = return "Not yet implemented"
+isValid filePath = do
+  strings <- readFile filePath
+  return strings
+
 
 hasWinningStrategy :: Int -> FilePath -> IO (String)
 hasWinningStrategy _ _ = return "Not yet implemented"
