@@ -18,8 +18,9 @@ type Move = ((Int,Int), (Int, Int), [Char])
 type PieceList = [Coordinate]
 type Coordinate = (Int, Int)
 type Card = String
+type GameOV = ([Card], PieceList, PieceList)
 
----- pattern matching for move type
+---- pattern matching for Move and GameOV type
 fst' (a,_,_) = a
 snd' (_,b,_) = b
 thd' (_,_,c) = c
@@ -86,10 +87,16 @@ makeMove game seed = do
                     else turnsPossible possibleMovesRed card playerCards
 
   let piece = gamePieces !! (chooseRandomPiece (length gamePieces) (mkStdGen seed) )
+
+  let moveSensei = if ((gamePieces !! 0 ) == piece )                            -- if the piece is index 0, we are moving the sensei
+                    then True
+                    else False
+
+
   let move = possibleTurns !! (chooseRandomMove (length possibleTurns)   (mkStdGen seed) )
   let verifyMove = checkLegalMove gamePieces ((fst piece) + (fst move), (snd piece) + (snd move))
 
-  let theMove = if (verifyMove == True)                                                 -- if current move is not legal, then we try with another
+  let theMove = if (verifyMove == True)                                         -- if current move is not legal, then we try with another
                 then (move, (playerCards !! card))
                 else do
                   let mv = checkLegalGenerate seed possibleTurns gamePieces move
@@ -106,7 +113,6 @@ makeMove game seed = do
                         then (move2, (newCard !! 0))
                         else (checkLegalGenerate seed possibleTurns2 gamePieces move2, (newCard !! 0))
 
-  -- MAKE SOME FUNCTION FOR OTHER CARD TMRW
   let tupMove = (fst theMove)
   let actualCard = (snd theMove)
 
@@ -114,7 +120,7 @@ makeMove game seed = do
                 then ((fst piece)+(fst tupMove), (snd piece)+(snd tupMove))
                 else piece                                                      -- if the move is still not legal, we will not perform any move
 
-
+  let wayOfStream = wayOfTheStream turn moveSensei newPiece
   let newGamePieces = removeItem piece gamePieces
 
   let fullMove = (piece, newPiece, actualCard)
@@ -124,7 +130,9 @@ makeMove game seed = do
   let initialWCards = updateCards initialOpPiece actualCard playerCards
   let initialWTurn = switchPlayer initialWCards
   let newGame = updateMove initialWTurn fullMove
-  newGame
+  if (wayOfStream)
+      then newGame { gameState = GameOver }                                     -- if way of stream is true, sensei has been moved to enemy shrine, and game has been concluded.
+      else newGame
 
 
 checkLegalGenerate :: Int -> PieceList -> PieceList -> Coordinate -> Coordinate -- Finds a legal move if current move is not legal.
@@ -149,7 +157,7 @@ checkLegalMove xy mv                                                            
   | (fst mv) < 0 = False                                                        --------
   | (snd mv) > 4 = False                                                        --------
   | (snd mv) < 0 = False
-  | (mv `elem` xy) = False                                                        --------
+  | (mv `elem` xy) = False                                                      --------
   | otherwise = True
 
 
@@ -195,6 +203,12 @@ setOpponentXY gm sensei arr
   | ((gameTurn gm) == Red && sensei == True) = gm {gamePiecesBlue = arr, gameState = GameOver, winner = Red}
   | ((gameTurn gm) == Blue) = gm {gamePiecesRed = arr}
   | ((gameTurn gm) == Red) = gm {gamePiecesBlue = arr}
+
+wayOfTheStream :: Player -> Bool -> Coordinate -> Bool
+wayOfTheStream gameTurn senseiMove newCoord
+  | (senseiMove == True) && (gameTurn == Blue) && (newCoord == (4,2)) = True
+  | (senseiMove == True) && (gameTurn == Red) && (newCoord == (0,2)) = True
+  | otherwise = False
 
 
 updatePieces :: Game -> Int -> [(Int,Int)] -> (Int, Int) -> Game
@@ -259,7 +273,7 @@ printTable table = do
   let game = (gameCards table)
   let piecesP1 = (gamePiecesBlue table)
   let piecesP2 =  (gamePiecesRed table)
-  "(" ++ show game ++ show piecesP1 ++ show piecesP2 ++ ")" ++ "\n"
+  "(" ++ show game ++ "," ++ show piecesP1 ++ "," ++ show piecesP2 ++ ")" ++ "\n"
 
 
 printMove :: Game -> String
@@ -267,27 +281,6 @@ printMove table = do
   let move = (recentMove table)
   show move ++ "\n"
 -------------------------------------------------------
---- TESTER ---
-initt = Game { gameCards = randomInitial (mkStdGen 100)
-                    , gameTurn = Blue
-                    , gamePiecesBlue = [(0,2),(0,0),(0,1),(0,3),(0,4)]
-                    , gamePiecesRed = [(4,2),(4,0),(4,1),(4,3),(4,4)]
-                    , recentMove = ((0,0),(0,0),"null")
-                    , gameState = Running
-                    , winner = None}
-
-lol1 = makeMove initt 100
-lol2 = makeMove lol1 100
-lol3 = makeMove lol2 100
-lol4 = makeMove lol3 100
-lol5 = makeMove lol4 100
-lol6 = makeMove lol5 100
-lol7 = makeMove lol6 100
-lol8 = makeMove lol7 100
-lol9 = makeMove lol8 100
-lol10 = makeMove lol9 100
-lol11 = makeMove lol10 100
-lol12 = makeMove lol11 100
 
 
 -------------------------------------------------------
@@ -310,23 +303,146 @@ generateRandom x y = do
 -------------------------------------------------------
 ------ GAMELOOP FOR GENERATING RANDOM GAMES -----------
 gameLoop :: Int -> Int -> Game -> String -> String
-gameLoop _ 0 _ s = s                                                            -- return final string when n==0
-gameLoop seed n gm string  | (gameState gm) == GameOver = "Game Over."
-                           | (winner gm) == Blue = "Blue Wins."
-                           | (winner gm) == Red = "Red Wins."
+gameLoop _ 0 gm s = s ++ printMove gm                                           -- return final string when n==0, remember to print final move.
+gameLoop seed n gm string  | (gameState gm) == GameOver = do
+                              let finalString = string ++ printMove gm ++ "Game Over!\n"
+                              let winnerString = if ((winner gm) == Blue)
+                                                then "Blue"
+                                                else "Red"
+                              let moveWin = winnerString ++ " made the winning-move: " ++ printMove gm ++ printTable gm
+                              --finalString ++ moveWin not using these
+                              string ++ printMove gm
                            | otherwise = do
-
-    let move = printMove gm
-    let newString = string ++ move
-    let newGame = makeMove gm seed
-    gameLoop (seed) (n-1) newGame newString
+                              --let table = printTable gm -- for debugging
+                              let move = printMove gm-- ++ table
+                              let newString = string ++ move
+                              let newGame = makeMove gm seed
+                              gameLoop (seed+1) (n-1) newGame newString                                   -- increment every iteration with some number(+1 right now), to get different seeds and increase randomness!
 ----------------------------------------------------------
 
 isValid :: FilePath -> IO (String)
 isValid filePath = do
-  strings <- readFile filePath
-  return strings
+  content <- readFile filePath
+  let linesOfContent = lines content
+  -- check the first line if table is good
+  let tableValid = if (checkInitial (linesOfContent !! 0))
+                    then True
+                    else False
+  let moves = delete (linesOfContent !! 0) linesOfContent                       --- Cutting off initial lines and checking it for itself.
+  let i = length (moves)
+  if (tableValid == False)
+    then return (error "ParseError")
+    else do
+        let table = (read (linesOfContent !! 0) :: GameOV)
+        let game = Game {gameCards = (fst' table)
+                        ,gamePiecesBlue = (snd' table)
+                        ,gamePiecesRed = (thd' table)
+                        ,gameTurn = Blue
+                        ,recentMove = ((0,0),(0,0),"null")
+                        ,gameState = Running
+                        ,winner = None}
+        let result = isValidFunc i moves game
+        return result
 
+isValidFunc :: Int -> [String] -> Game -> String
+isValidFunc 0 _ gm = printTable gm
+isValidFunc n content gm = do
+  let str = (content !! 0) -- do some rule checking on this string.
+  let newArr = delete str content
+  let move = read str :: Move
+  let gamePieces = if ((gameTurn gm) == Blue)                                            -- specify gamepieces to update (red or blue?)
+                  then (gamePiecesBlue gm)
+                  else (gamePiecesRed gm)
+  let playerCards = if (gameTurn gm == Blue)                                           -- available players cards for each player
+                  then [] ++ [(gameCards gm) !! 0] ++ [(gameCards gm) !! 1]
+                  else [] ++ [(gameCards gm) !! 2] ++ [(gameCards gm) !! 3]
+  let senseimove = if ((fst' move) == (gamePieces !! 0))
+                  then 0
+                  else 1
+
+  let newGamePieces = removeItem (fst' move) gamePieces
+  let validMove = checkValidMove gm newGamePieces move
+
+  if (validMove == False)
+    then "NonValid " ++ str
+    else do
+      let verifyMove = if ((snd' move) `elem` gamePieces)
+                    then (fst' move)
+                    else (snd' move)
+      let newGame = updatePieces gm senseimove newGamePieces verifyMove
+      let newGame' = takePiece newGame verifyMove
+      let newGame'' = updateCards newGame' (thd' move) playerCards
+      let newGame''' = switchPlayer newGame''
+      isValidFunc (n-1) newArr newGame'''
+
+----------------------------------------------------------------------------
+------------------CHECKERS FOR ISVALID--------------------------------------
+
+--TODO: Need to also check if sensei is removed ... PICK WINNER AND REMOVE PIECES FROM OPPONENT
+--TODO: Check if cards sorted lixographically every time
+--TODO: Check if all initial pieces present in game ..
+
+
+
+checkValidMove :: Game -> PieceList -> Move -> Bool
+checkValidMove gm xy mv = do
+  let checkOOBExisting = if (checkLegalMove xy (snd' mv) == False)                  --- checkLegalMove function also used for generating random moves.
+                          then False
+                          else True
+
+  let possibleTurns = if (gameTurn gm == Blue)
+                      then turnsPossible2 possibleMovesBlue (thd' mv)
+                      else turnsPossible2 possibleMovesRed (thd' mv)
+
+
+  let cardMove = (((fst (snd' mv)) - fst (fst' mv)), (snd (snd' mv) - snd (fst' mv)))  --- Find what the move was, by subtracting end position from start position. Then check if is in possible moves for that card.
+  let checkValidCardMove = if (cardMove `elem` (possibleTurns) || cardMove == (0,0))   --- If the cardMove is (0,0) it jsut means we did not make a move and stayed at position.
+                          then True
+                          else False
+
+  if ( (checkOOBExisting == True) && (checkValidCardMove == True) && (possibleTurns /= []) ) --- if posibleTurns == [], then an unknown card has been specified in moves.
+    then True
+    else False
+
+turnsPossible2 :: CardMoves -> String -> [(Int, Int)]                           --- same as from makeMove but just checks for string instead of index
+turnsPossible2 possibleMoves str
+  | str == "Cobra" = (cobra possibleMoves)
+  | str == "Rabbit" = (rabbit possibleMoves)
+  | str == "Rooster" = (rooster possibleMoves)
+  | str == "Tiger" = (tiger possibleMoves)
+  | str == "Monkey" = (monkey possibleMoves)
+  | otherwise = []
+
+
+checkInitial :: String -> Bool
+checkInitial string = do
+  let gameTable = read string :: GameOV
+  if (checkValidGame gameTable)
+    then True
+    else False
+
+checkValidGame :: GameOV -> Bool                                                -- Checks if the initial table is in lexicographical order as well as the piecelists.
+checkValidGame game = do                                                        -- if not the game is not valid and we should return ParseError.
+  let table = fst' game
+  let finTable = finalizeArr table
+  let validtable = if (table == finTable)
+                  then True
+                  else False
+  let pieceList1 = snd' game
+  let validP1 = if (pieceList1 == ([head pieceList1] ++ sort(tail(pieceList1))))
+                then True
+                else False
+  let pieceList2 = snd' game
+  let validP2 = if (pieceList2 == ([head pieceList2] ++ sort(tail(pieceList2))))
+                then True
+                else False
+  if (validtable == True && validP1 == True && validP2 == True)
+    then True
+    else False
+
+--checkNonValid :: String -> Bool
+--checkNonValid string = do
+--  let
 
 hasWinningStrategy :: Int -> FilePath -> IO (String)
 hasWinningStrategy _ _ = return "Not yet implemented"
