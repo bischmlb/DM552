@@ -120,14 +120,14 @@ makeMove game seed = do
                 then ((fst piece)+(fst tupMove), (snd piece)+(snd tupMove))
                 else piece                                                      -- if the move is still not legal, we will not perform any move
 
-  let wayOfStream = wayOfTheStream turn moveSensei newPiece
   let newGamePieces = removeItem piece gamePieces
 
   let fullMove = (piece, newPiece, actualCard)
                                                                                 -- update game variables
   let initialWPieces = updatePieces game (chooseRandomPiece (length gamePieces) (mkStdGen seed) ) newGamePieces newPiece
-  let initialOpPiece = takePiece initialWPieces newPiece
-  let initialWCards = updateCards initialOpPiece actualCard playerCards
+  let initialOpPiece = takePiece initialWPieces newPiece -- update opponent pieces
+  let initialWCards = updateCards initialOpPiece actualCard playerCards -- update cards
+  let wayOfStream = wayOfTheStream initialOpPiece -- check way of the stream
   let wayOfTheStream = if (wayOfStream == True)
                       then initialWCards { gameState = GameOver, winner = turn}
                       else initialWCards
@@ -205,11 +205,20 @@ setOpponentXY gm sensei arr
   | ((gameTurn gm) == Blue) = gm {gamePiecesRed = arr}
   | ((gameTurn gm) == Red) = gm {gamePiecesBlue = arr}
 
-wayOfTheStream :: Player -> Bool -> Coordinate -> Bool
-wayOfTheStream gameTurn senseiMove newCoord
-  | (senseiMove == True) && (gameTurn == Blue) && (newCoord == (4,2)) = True
-  | (senseiMove == True) && (gameTurn == Red) && (newCoord == (0,2)) = True
-  | otherwise = False
+wayOfTheStream :: Game -> Bool
+wayOfTheStream gm = do
+  let turn = (gameTurn gm)
+  let pieceList = if (turn == Blue)
+                  then (gamePiecesBlue gm)
+                  else (gamePiecesRed gm)
+  let senseiPiece = (pieceList !! 0)
+  let winCond = if (turn == Blue)
+                then (4,2)
+                else (0,2)
+  let wayOfStream = if (senseiPiece == winCond)
+                    then True
+                    else False
+  wayOfStream
 
 
 updatePieces :: Game -> Int -> [(Int,Int)] -> (Int, Int) -> Game
@@ -385,10 +394,10 @@ isValidFunc n content gm = do
       let opponentXY = if (gameTurn gm == Blue)
                         then (gamePiecesRed gm)
                         else (gamePiecesBlue gm)
-      let wayOfStream = wayOfTheStream (gameTurn gm) moveSensei verifyMove
       let newGame = updatePieces gm senseimove newGamePieces verifyMove
       let newGame' = takePiece newGame verifyMove
       let newGame'' = updateCards newGame' (thd' move) playerCards
+      let wayOfStream = wayOfTheStream newGame'
       let wayOfTheStream = if (wayOfStream == True)
                           then newGame'' { gameState = GameOver, winner = (gameTurn gm)}
                           else newGame''
