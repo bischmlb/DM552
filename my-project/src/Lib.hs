@@ -349,17 +349,21 @@ isValid filePath = do
         let result = isValidFunc i moves game
         return result
 
+printTable2 :: Game -> String                                                   -- needed this to pass extra tests on website..
+printTable2 table = do
+  let game = (gameCards table)
+  let piecesP1 = (gamePiecesBlue table)
+  let piecesP2 =  (gamePiecesRed table)
+  "(" ++ show game ++ "," ++ show piecesP1 ++ "," ++ show piecesP2 ++ ")"
+
 isValidFunc :: Int -> [String] -> Game -> String
 isValidFunc 0 _ gm | (gameState gm) == GameOver = do
                             let winnerr = (winner gm)
                             let finalGame = if (winnerr == Blue)
                                               then gm {gamePiecesRed = []}
                                               else gm {gamePiecesBlue = []}
-                            let cards = (gameCards finalGame)
-                            let piecesP1 = (gamePiecesBlue finalGame)
-                            let piecesP2 =  (gamePiecesRed finalGame)
-                            "(" ++ show cards ++ "," ++ show piecesP1 ++ "," ++ show piecesP2 ++ ")" ++ "\n"
-                    | otherwise = printTable gm
+                            printTable2 finalGame
+                    | otherwise = printTable2 gm
 isValidFunc n content gm = do
 
   let str = (content !! 0) -- do some rule checking on this string.
