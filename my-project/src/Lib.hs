@@ -497,7 +497,7 @@ checkInitial string = do
 checkSameStart :: PieceList -> Bool
 checkSameStart []                 = False
 checkSameStart (x:xs)   | x `elem` xs   = True
-                        | otherwise = checkSameStart (removeItem x (x:xs))
+                        | otherwise = checkSameStart xs
 
 checkBoundaries :: PieceList -> Bool
 checkBoundaries []          = False
@@ -505,7 +505,7 @@ checkBoundaries (x:xs)  | (fst x) > 4 = True
                         | (snd x) > 4 = True
                         | (fst x) < 0 = True
                         | (snd x) < 0 = True
-                        | otherwise = checkBoundaries (removeItem x (x:xs))
+                        | otherwise = checkBoundaries xs
 
 
 checkValidGame :: GameOV -> Bool                                                -- Checks if the initial table is in lexicographical order as well as the piecelists.
