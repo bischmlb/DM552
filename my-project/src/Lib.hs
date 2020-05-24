@@ -346,7 +346,13 @@ isValid filePath = do
                         ,recentMove = ((0,0),(0,0),"null")
                         ,gameState = Running
                         ,winner = None}
-        let result = isValidFunc i moves game
+        let wayOfStream = wayOfTheStream game
+        let wayOfStreamWinner = if (wayOfStream == True)
+                                then game {gamePiecesRed = []}
+                                else game
+        let result = if (wayOfStream == True)
+                    then "(" ++ show (gameCards wayOfStreamWinner) ++ "," ++ show (gamePiecesBlue wayOfStreamWinner) ++ "," ++ show (gamePiecesRed wayOfStreamWinner) ++ ")"
+                    else isValidFunc i moves game
         return result
 
 printTable2 :: Game -> String                                                   -- needed this to pass extra tests on website..
@@ -354,7 +360,10 @@ printTable2 table = do
   let game = (gameCards table)
   let piecesP1 = (gamePiecesBlue table)
   let piecesP2 =  (gamePiecesRed table)
-  "(" ++ show game ++ "," ++ show piecesP1 ++ "," ++ show piecesP2 ++ ")"
+  let perspective = if ((gameTurn table) == Blue)                               -- opposite because we switch player before checking for end of loop ..
+                    then "(" ++ show game ++ "," ++ show piecesP2 ++ "," ++ show piecesP1 ++ ")"  -- need to print from winners perspective
+                    else "(" ++ show game ++ "," ++ show piecesP1 ++ "," ++ show piecesP2 ++ ")"
+  perspective
 
 isValidFunc :: Int -> [String] -> Game -> String
 isValidFunc 0 _ gm | (gameState gm) == GameOver = do
@@ -407,16 +416,25 @@ isValidFunc n content gm = do
 ------------------CHECKERS FOR ISVALID--------------------------------------
 
 
-
 checkForMissing :: GameOV -> Bool
 checkForMissing gm = do
-  let checkRedPieces = if ((thd' gm) /= [(4,2),(4,0),(4,1),(4,3),(4,4)])
-                        then False
-                        else True
-  let checkBluePieces = if ((snd' gm) /= [(0,2),(0,0),(0,1),(0,3),(0,4)])
-                        then False
-                        else True
-  if ((checkRedPieces == True) && (checkBluePieces == True))
+  --let checkRedPieces = if ((thd' gm) /= [(4,2),(4,0),(4,1),(4,3),(4,4)]) --- This was outcommented as i found out it is OK to have middle-game state as initial game :D
+      --                  then False
+    --                    else True
+  --let checkBluePieces = if ((snd' gm) /= [(0,2),(0,0),(0,1),(0,3),(0,4)])
+                --        then False
+                --        else True
+  --if ((checkRedPieces == True) && (checkBluePieces == True))
+    --then True
+    --else False
+  let checkRedPiece = if (length (thd' gm) > 5)
+                      then False
+                      else True
+
+  let checkBluePiece = if (length (snd' gm) > 5)
+                      then False
+                      else True
+  if ((checkRedPiece == True) && (checkBluePiece == True))
     then True
     else False
 
@@ -450,8 +468,12 @@ checkValidMove gm oldxy newxy mv = do
                   then True
                   else False
 
+  let checkGameEnded = if (gameState gm == GameOver)
+                      then True
+                      else False
+
   if ( (checkOOBExisting == True) && (checkValidCardMove == True) && (possibleTurns /= []) &&
-        (validPiece == True) && cardOnHand == True ) --- if posibleTurns == [], then an unknown card has been specified in moves.
+        (validPiece == True) && (cardOnHand == True) && (checkGameEnded == False)) --- if posibleTurns == [], then an unknown card has been specified in moves.
     then True
     else False
 
