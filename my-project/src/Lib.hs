@@ -336,7 +336,7 @@ isValid filePath = do
   let moves = delete (linesOfContent !! 0) linesOfContent                       --- Cutting off initial lines and checking it for itself.
   let i = length (moves)
   if (tableValid == False)
-    then return "ParseError"
+    then return "ParsingError"
     else do
         let table = (read (linesOfContent !! 0) :: GameOV)
         let game = Game {gameCards = (fst' table)
@@ -355,8 +355,10 @@ isValidFunc 0 _ gm | (gameState gm) == GameOver = do
                             let finalGame = if (winnerr == Blue)
                                               then gm {gamePiecesRed = []}
                                               else gm {gamePiecesBlue = []}
-                            let finalTable = printTable finalGame
-                            finalTable
+                            let cards = (gameCards finalGame)
+                            let piecesP1 = (gamePiecesBlue finalGame)
+                            let piecesP2 =  (gamePiecesRed finalGame)
+                            "(" ++ show cards ++ "," ++ show piecesP1 ++ "," ++ show piecesP2 ++ ")" ++ "\n"
                     | otherwise = printTable gm
 isValidFunc n content gm = do
 
@@ -378,7 +380,7 @@ isValidFunc n content gm = do
                   else False
 
   let newGamePieces = removeItem (fst' move) gamePieces
-  let validMove = checkValidMove gm newGamePieces move
+  let validMove = checkValidMove gm gamePieces newGamePieces move
 
 
   if (validMove == False)
@@ -416,9 +418,9 @@ checkForMissing gm = do
 
 
 
-checkValidMove :: Game -> PieceList -> Move -> Bool
-checkValidMove gm xy mv = do
-  let checkOOBExisting = if (checkLegalMove xy (snd' mv) == False)                  --- checkLegalMove function also used for generating random moves.
+checkValidMove :: Game -> PieceList -> PieceList -> Move -> Bool
+checkValidMove gm oldxy newxy mv = do
+  let checkOOBExisting = if (checkLegalMove newxy (snd' mv) == False)                  --- checkLegalMove function also used for generating random moves.
                           then False
                           else True
 
@@ -440,7 +442,12 @@ checkValidMove gm xy mv = do
                     then True
                     else False
 
-  if ( (checkOOBExisting == True) && (checkValidCardMove == True) && (possibleTurns /= []) && cardOnHand == True ) --- if posibleTurns == [], then an unknown card has been specified in moves.
+  let validPiece = if ((fst' mv) `elem` oldxy)                                  -- check if we axtually have a piece to move heere
+                  then True
+                  else False
+
+  if ( (checkOOBExisting == True) && (checkValidCardMove == True) && (possibleTurns /= []) &&
+        (validPiece == True) && cardOnHand == True ) --- if posibleTurns == [], then an unknown card has been specified in moves.
     then True
     else False
 
