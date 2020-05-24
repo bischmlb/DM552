@@ -45,4 +45,9 @@ possibleMovesBlue = CardMoves { cobra = [(1,0), (1,1), (1,-1)]
                               , tiger = [(0,2), (0,-1)]
                               , monkey = [(-1,1), (1,1), (-1,-1), (1,-1)]}
 ```  
-These helps the program check if the move the player is about to make, is legal using the particular card.
+These helps the program check if the move the player is about to make, is legal using the particular card.  
+  
+Currently, the reason I am not hitting 100% test coverage, is because my current tests does not reach a random seed that causes 
+```haskell
+moveSensei
+``` to be true, and also I have not implemented hasWinningStrategy as of yet.

@@ -10,8 +10,8 @@ import System.Random
 import Data.List
 
 
-data Player = Blue | Red | None deriving (Eq, Show)
-data Status = Running | GameOver deriving (Eq, Show)
+data Player = Blue | Red | None deriving (Eq)
+data Status = Running | GameOver deriving (Eq)
 
 
 type Move = ((Int,Int), (Int, Int), [Char])
@@ -31,7 +31,7 @@ data CardMoves = CardMoves { cobra :: [Coordinate]
                             , rooster :: [Coordinate]
                             , tiger :: [Coordinate]
                             , monkey :: [Coordinate]
-                            } deriving (Eq, Show)
+                            }
 
 data Game = Game { gameCards :: [Card]
                   , gameTurn :: Player
@@ -40,11 +40,7 @@ data Game = Game { gameCards :: [Card]
                   , recentMove :: Move
                   , gameState :: Status
                   , winner :: Player
-                  } deriving (Eq, Show)
-
-
-
-possibleCards = ["Cobra", "Rabbit", "Rooster", "Tiger", "Monkey"]
+                  }
 
 
 possibleMovesBlue = CardMoves { cobra = [(-1,0), (1,1), (1,-1)]
@@ -258,8 +254,8 @@ randomInitial gen =
       (int2, newGen') = randomR(0,3) newGen
       (int3, newGen'') = randomR(0,2) newGen'
       (int4, newGen''') = randomR(0,1) newGen''
-      string1 = (possibleCards !! int1)
-      newList = removeItem string1 possibleCards
+      string1 = (["Cobra", "Rabbit", "Rooster", "Tiger", "Monkey"] !! int1)
+      newList = removeItem string1 ["Cobra", "Rabbit", "Rooster", "Tiger", "Monkey"]
       string2 = (newList !! int2)
       newList2 = removeItem string2 newList
       string3 = (newList2 !! int3)
@@ -315,11 +311,11 @@ generateRandom x y = do
 gameLoop :: Int -> Int -> Game -> String -> String
 gameLoop _ 0 gm s = s ++ printMove gm                                           -- return final string when n==0, remember to print final move.
 gameLoop seed n gm string  | (gameState gm) == GameOver = do
-                              let finalString = string ++ printMove gm ++ "Game Over!\n"
-                              let winnerString = if ((winner gm) == Blue)
-                                                then "Blue"
-                                                else "Red"
-                              --let moveWin = winnerString ++ " made the winning-move: " ++ printMove gm ++ printTable gm for debugging
+                              --let finalString = string ++ printMove gm ++ "Game Over!\n"
+                              --let winnerString = if ((winner gm) == Blue)
+                                        --        then "Blue"
+                                            --    else "Red"
+                              --let moveWin = winnerString ++ " made the winning-move: " ++ printMove gm ++ printTable gm (not used for final product cause they dont represent valid output)
                               string ++ printMove gm
                            | otherwise = do
                               --let table = printTable gm -- for debugging
@@ -391,9 +387,6 @@ isValidFunc n content gm = do
       let verifyMove = if ((snd' move) `elem` gamePieces)
                     then (fst' move)
                     else (snd' move)
-      let opponentXY = if (gameTurn gm == Blue)
-                        then (gamePiecesRed gm)
-                        else (gamePiecesBlue gm)
       let newGame = updatePieces gm senseimove newGamePieces verifyMove
       let newGame' = takePiece newGame verifyMove
       let newGame'' = updateCards newGame' (thd' move) playerCards
@@ -428,6 +421,7 @@ checkValidMove gm xy mv = do
   let checkOOBExisting = if (checkLegalMove xy (snd' mv) == False)                  --- checkLegalMove function also used for generating random moves.
                           then False
                           else True
+
 
   let possibleTurns = if (gameTurn gm == Blue)
                       then turnsPossible2 possibleMovesBlue (thd' mv)
@@ -469,9 +463,9 @@ checkInitial string = do
 
 checkValidGame :: GameOV -> Bool                                                -- Checks if the initial table is in lexicographical order as well as the piecelists.
 checkValidGame game = do                                                        -- if not the game is not valid and we should return ParseError.
-  let table = fst' game
-  let finTable = finalizeArr table
-  let validtable = if (table == finTable)
+  let cards = fst' game
+  let finTable = finalizeArr cards
+  let validtable = if (cards == finTable)
                   then True
                   else False
   let pieceList1 = snd' game
