@@ -494,10 +494,28 @@ checkInitial string = do
     then True
     else False
 
+checkSameStart :: PieceList -> Bool
+checkSameStart []                 = False
+checkSameStart (x:xs)   | x `elem` xs   = True
+                        | otherwise = checkSameStart (removeItem x (x:xs))
+
+checkBoundaries :: PieceList -> Bool
+checkBoundaries []          = False
+checkBoundaries (x:xs)  | (fst x) > 4 = True
+                        | (snd x) > 4 = True
+                        | (fst x) < 0 = True
+                        | (snd x) < 0 = True
+                        | otherwise = checkBoundaries (removeItem x (x:xs))
+
+
 checkValidGame :: GameOV -> Bool                                                -- Checks if the initial table is in lexicographical order as well as the piecelists.
 checkValidGame game = do                                                        -- if not the game is not valid and we should return ParseError.
   let cards = fst' game
   let finTable = finalizeArr cards
+  let checkSameStart1 = checkSameStart (snd' game)
+  let checkSameStart2 = checkSameStart (thd' game)
+  let checkBounds1 = checkBoundaries (snd' game)
+  let checkBounds2 = checkBoundaries (thd' game)
   let validtable = if (cards == finTable)
                   then True
                   else False
@@ -510,7 +528,8 @@ checkValidGame game = do                                                        
                 then True
                 else False
   let missingPieces = checkForMissing game
-  if (validtable == True && validP1 == True && validP2 == True && missingPieces == True)
+  if (validtable == True && validP1 == True && validP2 == True && missingPieces == True
+     && checkSameStart1 == False && checkSameStart2 == False && checkBounds1 == False && checkBounds2 == False)
     then True
     else False
 
