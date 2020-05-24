@@ -512,8 +512,8 @@ checkValidGame :: GameOV -> Bool                                                
 checkValidGame game = do                                                        -- if not the game is not valid and we should return ParseError.
   let cards = fst' game
   let finTable = finalizeArr cards
-  let checkSameStart1 = checkSameStart (snd' game)
-  let checkSameStart2 = checkSameStart (thd' game)
+  let pieceLists = (snd' game) ++ (thd' game)
+  let checkSameStartPos = checkSameStart pieceLists
   let checkBounds1 = checkBoundaries (snd' game)
   let checkBounds2 = checkBoundaries (thd' game)
   let validtable = if (cards == finTable)
@@ -529,7 +529,7 @@ checkValidGame game = do                                                        
                 else False
   let missingPieces = checkForMissing game
   if (validtable == True && validP1 == True && validP2 == True && missingPieces == True
-     && checkSameStart1 == False && checkSameStart2 == False && checkBounds1 == False && checkBounds2 == False)
+     && checkSameStartPos == False && checkBounds1 == False && checkBounds2 == False)
     then True
     else False
 
