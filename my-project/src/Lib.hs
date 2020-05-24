@@ -340,7 +340,7 @@ isValid filePath = do
   let moves = delete (linesOfContent !! 0) linesOfContent                       --- Cutting off initial lines and checking it for itself.
   let i = length (moves)
   if (tableValid == False)
-    then return (error "ParseError")
+    then return "ParseError"
     else do
         let table = (read (linesOfContent !! 0) :: GameOV)
         let game = Game {gameCards = (fst' table)
@@ -386,7 +386,7 @@ isValidFunc n content gm = do
 
 
   if (validMove == False)
-    then error ("NonValid " ++ str)
+    then ("NonValid " ++ str)
     else do
       let verifyMove = if ((snd' move) `elem` gamePieces)
                     then (fst' move)
@@ -438,8 +438,15 @@ checkValidMove gm xy mv = do
   let checkValidCardMove = if (cardMove `elem` (possibleTurns) || cardMove == (0,0))   --- If the cardMove is (0,0) it jsut means we did not make a move and stayed at position.
                           then True
                           else False
+  let availableCards = if ((gameTurn gm) == Blue)                                 --- Check if the card the player wants to use is actually on the players hand
+                        then ([(gameCards gm) !! 0] ++ ([(gameCards gm) !! 1]))
+                        else ([(gameCards gm) !! 2] ++ ([(gameCards gm) !! 3]))
 
-  if ( (checkOOBExisting == True) && (checkValidCardMove == True) && (possibleTurns /= []) ) --- if posibleTurns == [], then an unknown card has been specified in moves.
+  let cardOnHand = if ((thd' mv) `elem` availableCards)
+                    then True
+                    else False
+
+  if ( (checkOOBExisting == True) && (checkValidCardMove == True) && (possibleTurns /= []) && cardOnHand == True ) --- if posibleTurns == [], then an unknown card has been specified in moves.
     then True
     else False
 
@@ -480,9 +487,6 @@ checkValidGame game = do                                                        
     then True
     else False
 
---checkNonValid :: String -> Bool
---checkNonValid string = do
---  let
 
 hasWinningStrategy :: Int -> FilePath -> IO (String)
 hasWinningStrategy _ _ = return "Not yet implemented"
