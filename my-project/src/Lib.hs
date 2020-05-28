@@ -355,15 +355,38 @@ isValid filePath = do
                     else isValidFunc i moves game
         return result
 
+-- (1,3) =
+
 printTable2 :: Game -> String                                                   -- needed this to pass extra tests on website..
 printTable2 table = do
   let game = (gameCards table)
   let piecesP1 = (gamePiecesBlue table)
   let piecesP2 =  (gamePiecesRed table)
   let perspective = if ((gameTurn table) == Blue)                               -- opposite because we switch player before checking for end of loop ..
-                    then "(" ++ show game ++ "," ++ show piecesP2 ++ "," ++ show piecesP1 ++ ")"  -- need to print from winners perspective
-                    else "(" ++ show game ++ "," ++ show piecesP1 ++ "," ++ show piecesP2 ++ ")"
+                    then "(" ++ show game ++ "," ++ show piecesP1 ++ "," ++ show piecesP2 ++ ")"
+                    else "(" ++ show (alternatePerspectiveCards game) ++ "," ++ show (constructPerspective piecesP2) ++ "," ++ show (constructPerspective piecesP1) ++ ")"  -- need to print from winners perspective
   perspective
+
+alternatePerspective :: PieceList -> PieceList                                                  -- sets the right perspective. mirrors the coordinates.
+alternatePerspective [] = []
+alternatePerspective (x:xs) =  [((4 - (fst x)), 4 - (snd x))] ++ alternatePerspective xs
+
+alternatePerspectiveCards :: [Card] -> [Card]
+alternatePerspectiveCards xy = ([xy !! 2] ++ [xy !! 3] ++ [xy !! 0] ++ [xy !! 1] ++ [xy !! 4])
+
+alternateMove :: Move -> Move
+alternateMove xy = do
+  let firstCoord = (4 - fst(fst' xy), 4 - snd (fst' xy))
+  let secondCoord = (4 - fst(snd' xy), 4 - snd (snd' xy))
+  (firstCoord, secondCoord, thd' xy)
+
+constructPerspective :: PieceList -> PieceList                                  -- we need to make sure it is also sorted lexicographically
+constructPerspective xs = do
+  let newList = alternatePerspective xs
+  let sorted = if (newList /= [])
+              then [head newList] ++ sort (tail newList)
+              else []
+  sorted
 
 isValidFunc :: Int -> [String] -> Game -> String
 isValidFunc 0 _ gm | (gameState gm) == GameOver = do
@@ -377,7 +400,9 @@ isValidFunc n content gm = do
 
   let str = (content !! 0) -- do some rule checking on this string.
   let newArr = delete str content
-  let move = read str :: Move
+  let move = if (gameTurn gm == Blue)
+              then read str :: Move
+              else alternateMove (read str :: Move)
   let gamePieces = if ((gameTurn gm) == Blue)                                            -- specify gamepieces to update (red or blue?)
                   then (gamePiecesBlue gm)
                   else (gamePiecesRed gm)
@@ -393,7 +418,10 @@ isValidFunc n content gm = do
                   else False
 
   let newGamePieces = removeItem (fst' move) gamePieces
-  let validMove = checkValidMove gm gamePieces newGamePieces move
+
+  let validMove = if (gameTurn gm == Red)
+                  then checkValidMove gm gamePieces newGamePieces move
+                  else checkValidMove gm gamePieces newGamePieces move
 
 
   if (validMove == False)

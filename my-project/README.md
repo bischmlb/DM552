@@ -39,7 +39,7 @@ data CardMoves = CardMoves { cobra :: [Coordinate]
                             , monkey :: [Coordinate]
                             } deriving (Eq, Show)
 
-possibleMovesBlue = CardMoves { cobra = [(1,0), (1,1), (1,-1)]
+possibleMoves = CardMoves { cobra = [(1,0), (1,1), (1,-1)]
                               , rabbit = [(-1,-1), (1,1), (2,0)]
                               , rooster = [(-1,-1), (-1,0), (1,0), (1,1)]
                               , tiger = [(0,2), (0,-1)]
@@ -51,4 +51,6 @@ Currently, the reason I am not hitting 100% test coverage, is because my current
 ```haskell
 moveSensei
 ```
-to be true, and also I have not implemented hasWinningStrategy as of yet. Also, tests have not been made for both red and blue pieces out of bounds for example, but only one of them, so similar tests will reduce coverage.
+to be true, and also I have not implemented hasWinningStrategy as of yet. Also, tests have not been made for both red and blue pieces out of bounds for example, and neither all x and y coordinates, but only some of them, so this will reduce coverage.
+
+For the final handin I corrected my mistake from last time and made the board in isValid presentable in the prefered way, from the players perspective.
