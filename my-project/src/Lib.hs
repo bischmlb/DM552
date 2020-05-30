@@ -284,7 +284,9 @@ printTable table = do
 
 printMove :: Game -> String
 printMove table = do
-  let move = (recentMove table)
+  let move = if (gameTurn table == Blue)
+            then alternateMove (recentMove table)
+            else (recentMove table)
   show move ++ "\n"
 -------------------------------------------------------
 
